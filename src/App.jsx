@@ -31,6 +31,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Activity,
+  AtSign,
   Binary,
   Boxes,
   ListChecks,
@@ -38,12 +39,15 @@ import {
   MessageSquareText,
   Moon,
   Network,
+  PenLine,
   Puzzle,
   RefreshCw,
   Search,
   Share2,
   Sigma,
+  Languages,
   Layers,
+  Globe,
   Sun,
   House,
   User,
@@ -65,6 +69,7 @@ import {
   SiTailwindcss, SiHtml5, SiCss, SiNodedotjs, SiExpress, SiFirebase, SiMongodb, SiPostgresql,
   SiCodeforces, SiDocker, SiGit, SiLinux, SiVercel, SiFigma, SiGithub, SiVite, SiRedux, SiLatex,
   SiPandas, SiJupyter, SiFacebook, SiX, SiInstagram, SiLeetcode,
+  SiPwa, SiThreedotjs, SiReactrouter, SiFramer, SiMysql, SiStripe, SiJsonwebtokens,
 } from "react-icons/si";
 import { FaAws, FaLinkedin } from "react-icons/fa";
 import { VscVscode } from "react-icons/vsc";
@@ -110,10 +115,10 @@ const NAV = [
 const ROLES = ["Full-Stack Developer", "Competitive Programmer", "NLP Researcher", "ML Practitioner"];
 
 const FACTS = [
-  ["Based in", "Chattogram, Bangladesh"],
-  ["Graduated", "B.Sc. CSE, Premier University"],
-  ["Working at", "Pathao Courier (Intern)"],
-  ["Researching", "Applied ML & NLP"],
+  ["Based in", "Chattogram, Bangladesh", MapPin],
+  ["Graduated", "B.Sc. CSE, Premier University", GraduationCap],
+  ["Working at", "Pathao Courier (Intern)", Briefcase],
+  ["Researching", "Applied ML & NLP", Brain],
 ];
 
 const FOCUS = [
@@ -266,6 +271,19 @@ const TECH = {
   "Vite": [SiVite, "#646cff", "#9aa0ff"],
   "Redux": [SiRedux, "#764abc", "#a77ee8"],
   "LaTeX": [SiLatex, "#008080", "#2dbdbd"],
+  // project tags
+  "React 19": [SiReact, "#0e9cc4", "#61dafb"],
+  "PWA": [SiPwa, "#5a0fc8", "#a77ee8"],
+  "Three.js": [SiThreedotjs, INK],
+  "Math.js": [Sigma, LINK],
+  "VLSM": [Network, LINK],
+  "Router": [SiReactrouter, "#ca4245", "#ef6b6e"],
+  "Framer Motion": [SiFramer, INK],
+  "Bengali": [Languages, LINK],
+  "MySQL": [SiMysql, "#4479a1", "#5ba6d4"],
+  "Stripe": [SiStripe, "#635bff", "#8f89ff"],
+  "Express": [SiExpress, INK],
+  "JWT": [SiJsonwebtokens, "#d63aff", "#e07bff"],
 };
 
 const SOCIAL_ICONS = {
@@ -282,6 +300,15 @@ function BrandIcon({ def, size = 14, className = "" }) {
   if (!def) return null;
   const [Icon, light, dark] = def;
   return <Icon size={size} aria-hidden="true" className={`ti shrink-0 ${className}`} style={{ "--ic": light, "--icd": dark || light }} />;
+}
+
+function TechTag({ name }) {
+  return (
+    <li className="tag inline-flex items-center gap-1.5 !py-1">
+      <BrandIcon def={TECH[name]} size={14} />
+      {name}
+    </li>
+  );
 }
 
 /* ───────────────────────── helpers ───────────────────────── */
@@ -642,10 +669,15 @@ function About() {
             </p>
           </Reveal>
           <dl className="mt-8 grid sm:grid-cols-2 gap-4">
-            {FACTS.map(([k, v], i) => (
+            {FACTS.map(([k, v, Icon], i) => (
               <Reveal key={k} delay={i * 60} className="card !p-5">
-                <dt className="text-sm text-ink-muted">{k}</dt>
-                <dd className="mt-1 text-lg font-semibold">{v}</dd>
+                <dt className="flex items-center gap-2.5 text-sm text-ink-muted">
+                  <span className="grid place-items-center w-8 h-8 shrink-0 rounded-md bg-sky-light text-sky-dark">
+                    <Icon size={16} aria-hidden="true" />
+                  </span>
+                  {k}
+                </dt>
+                <dd className="mt-3 text-lg font-semibold">{v}</dd>
               </Reveal>
             ))}
           </dl>
@@ -713,10 +745,7 @@ function Skills() {
               <h3 className="mt-4 text-xl">{title}</h3>
               <ul className="mt-4 flex flex-wrap gap-1.5">
                 {items.map((s) => (
-                  <li key={s} className="tag inline-flex items-center gap-1.5 !py-1">
-                    <BrandIcon def={TECH[s]} size={14} />
-                    {s}
-                  </li>
+                  <TechTag key={s} name={s} />
                 ))}
               </ul>
             </Reveal>
@@ -759,16 +788,18 @@ function Projects() {
                 <p className="text-xs font-medium text-link">{p.kind}</p>
                 <h3 className="mt-1 text-2xl">{p.title}</h3>
                 <p className="mt-3 text-sm text-ink-muted leading-relaxed flex-1">{p.desc}</p>
-                <div className="mt-4 flex flex-wrap gap-1.5">
+                <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Tech stack">
                   {p.tags.map((t) => (
-                    <span key={t} className="tag">{t}</span>
+                    <TechTag key={t} name={t} />
                   ))}
-                </div>
+                </ul>
                 <div className="mt-5 flex items-center gap-4 text-sm font-medium">
-                  <a href={p.demo} target="_blank" rel="noopener noreferrer" className="text-link hover:underline inline-flex items-center gap-1">
-                    Live demo <ArrowUpRight size={14} />
+                  <a href={p.demo} target="_blank" rel="noopener noreferrer" className="text-link hover:underline inline-flex items-center gap-1.5">
+                    <Globe size={15} /> Live demo <ArrowUpRight size={14} />
                   </a>
-                  <a href={p.code} target="_blank" rel="noopener noreferrer" className="text-ink hover:underline">Source</a>
+                  <a href={p.code} target="_blank" rel="noopener noreferrer" className="text-ink hover:underline inline-flex items-center gap-1.5">
+                    <GithubIcon width={15} height={15} /> Source
+                  </a>
                 </div>
               </div>
             </Reveal>
@@ -917,6 +948,22 @@ function InstallCard() {
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || "fa7f8ec7-a4a8-424b-8efd-9b6387755682";
 const EMPTY = { name: "", email: "", subject: "", message: "" };
 
+/** Form field with a leading icon that lights up on focus. */
+function IconField({ Icon, top = false, children }) {
+  return (
+    <div className="group relative">
+      <Icon
+        size={16}
+        aria-hidden="true"
+        className={`pointer-events-none absolute left-3 text-ink-ghost transition-colors duration-150 group-focus-within:text-link ${
+          top ? "top-3.5" : "top-1/2 -translate-y-1/2"
+        }`}
+      />
+      {children}
+    </div>
+  );
+}
+
 function Contact() {
   const [form, setForm] = useState(EMPTY);
   const [state, setState] = useState("idle"); // idle | loading | success | error
@@ -999,20 +1046,28 @@ function Contact() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="c-name" className={label}>Name</label>
-                    <input id="c-name" required autoComplete="name" className={field} placeholder="Your name" value={form.name} onChange={set("name")} disabled={state === "loading"} />
+                    <IconField Icon={User}>
+                      <input id="c-name" required autoComplete="name" className={`${field} pl-10`} placeholder="Your name" value={form.name} onChange={set("name")} disabled={state === "loading"} />
+                    </IconField>
                   </div>
                   <div>
                     <label htmlFor="c-email" className={label}>Email</label>
-                    <input id="c-email" type="email" required autoComplete="email" className={field} placeholder="you@example.com" value={form.email} onChange={set("email")} disabled={state === "loading"} />
+                    <IconField Icon={AtSign}>
+                      <input id="c-email" type="email" required autoComplete="email" className={`${field} pl-10`} placeholder="you@example.com" value={form.email} onChange={set("email")} disabled={state === "loading"} />
+                    </IconField>
                   </div>
                 </div>
                 <div>
                   <label htmlFor="c-subject" className={label}>Subject</label>
-                  <input id="c-subject" className={field} placeholder="What's it about?" value={form.subject} onChange={set("subject")} disabled={state === "loading"} />
+                  <IconField Icon={PenLine}>
+                    <input id="c-subject" className={`${field} pl-10`} placeholder="What's it about?" value={form.subject} onChange={set("subject")} disabled={state === "loading"} />
+                  </IconField>
                 </div>
                 <div>
                   <label htmlFor="c-msg" className={label}>Message</label>
-                  <textarea id="c-msg" required rows={5} className={`${field} resize-none`} placeholder="Tell me about your idea…" value={form.message} onChange={set("message")} disabled={state === "loading"} />
+                  <IconField Icon={MessageSquareText} top>
+                    <textarea id="c-msg" required rows={5} className={`${field} pl-10 resize-none`} placeholder="Tell me about your idea…" value={form.message} onChange={set("message")} disabled={state === "loading"} />
+                  </IconField>
                 </div>
                 <button type="submit" disabled={state === "loading"} className="btn-primary w-full !py-2.5 disabled:opacity-70 disabled:cursor-not-allowed">
                   {state === "loading" ? (<><LoaderCircle size={16} className="animate-spin" /> Sending…</>) : (<><Send size={16} /> Send message</>)}
