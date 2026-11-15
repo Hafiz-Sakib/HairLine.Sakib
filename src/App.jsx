@@ -637,22 +637,18 @@ function Hero() {
 function About() {
   return (
     <section id="about" className="section bg-tint border-y border-line">
-      <div className="wrap grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-16 items-start">
-        <Reveal className="mx-auto w-full max-w-[380px]">
-          <div className="card !p-6 text-center">
-            <div className="mx-auto w-full max-w-[280px] rounded-full p-1 bg-gradient-to-br from-primary via-link/40 to-transparent">
+      <div className="wrap grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-16 items-start lg:items-stretch">
+        <Reveal className="mx-auto w-full max-w-[380px] lg:max-w-none">
+          <div className="card !p-6 lg:h-full grid place-items-center">
+            <div className="w-full max-w-[320px] rounded-full p-1 bg-gradient-to-br from-primary via-link/40 to-transparent">
               <img
                 src={profile}
-                alt="Portrait of Hafiz Sakib"
+                alt="Portrait of Mohammad Hafizur Rahman Sakib"
                 width="720"
                 height="720"
                 loading="lazy"
                 className="w-full aspect-square object-cover rounded-full border-4 border-card"
               />
-            </div>
-            <div className="pt-5">
-              <p className="font-bold text-lg">Mohammad Hafizur Rahman Sakib</p>
-              <p className="text-sm text-ink-muted">Full-Stack Developer · Competitive Programmer</p>
             </div>
           </div>
         </Reveal>
