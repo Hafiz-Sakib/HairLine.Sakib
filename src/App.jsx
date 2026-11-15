@@ -639,16 +639,18 @@ function About() {
     <section id="about" className="section bg-tint border-y border-line">
       <div className="wrap grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-16 items-start">
         <Reveal className="mx-auto w-full max-w-[380px]">
-          <div className="card !p-3">
-            <img
-              src={profile}
-              alt="Portrait of Hafiz Sakib"
-              width="720"
-              height="720"
-              loading="lazy"
-              className="w-full aspect-square object-cover rounded-md"
-            />
-            <div className="px-2 pt-4 pb-2">
+          <div className="card !p-6 text-center">
+            <div className="mx-auto w-full max-w-[280px] rounded-full p-1 bg-gradient-to-br from-primary via-link/40 to-transparent">
+              <img
+                src={profile}
+                alt="Portrait of Hafiz Sakib"
+                width="720"
+                height="720"
+                loading="lazy"
+                className="w-full aspect-square object-cover rounded-full border-4 border-card"
+              />
+            </div>
+            <div className="pt-5">
               <p className="font-bold text-lg">Mohammad Hafizur Rahman Sakib</p>
               <p className="text-sm text-ink-muted">Full-Stack Developer · Competitive Programmer</p>
             </div>
@@ -689,10 +691,10 @@ function About() {
 
 function Focus() {
   return (
-    <section className="section">
+    <section className="section md:!py-16 lg:!py-20">
       <div className="wrap">
         <SectionHead eyebrow="What I do" title="One developer, four ways to be useful." />
-        <div className="mt-14 md:mt-20 space-y-20 md:space-y-28">
+        <div className="mt-10 md:mt-12 space-y-14 md:space-y-14 lg:space-y-16">
           {FOCUS.map(({ id, eyebrow, title, body, points, Figure, label }, i) => {
             const flip = i % 2 === 1;
             return (
