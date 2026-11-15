@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
+  body { padding-bottom: env(safe-area-inset-bottom); }
+  body { @apply bg-white text-ink font-sans antialiased; }
+  h1, h2, h3, h4 { @apply font-bold; line-height: 1.2; }
+  h1, h2 { letter-spacing: -0.025em; }
+  :focus-visible { outline: 2px solid #00639b; outline-offset: 2px; }
+}
+
+@layer components {
+  .btn { @apply inline-flex items-center justify-center gap-2 text-base font-medium px-[15px] py-[6px] rounded-md cursor-pointer transition-colors duration-250 ease-notion; }
+  .btn-primary { @apply btn bg-primary text-white hover:bg-primary-hover active:bg-primary-active; }
+  .btn-secondary { @apply btn bg-sky-light text-sky-dark hover:bg-[#d1ecfd] active:bg-[#c0e3fc]; }
+  .btn-ghost { @apply btn bg-transparent text-ink border border-ink rounded-sm px-[10px] py-[5px] font-normal hover:bg-hover; }
+  .card { @apply bg-white rounded-md shadow-card p-6 transition-shadow duration-250 ease-notion hover:shadow-card-hover; }
+  .section { @apply px-4 sm:px-10 py-16 md:py-24; }
+  .wrap { @apply mx-auto w-full max-w-[1280px]; }
+  .eyebrow { @apply text-sm font-medium text-primary; }
+  .tag { @apply inline-block text-xs text-ink-muted bg-tint border border-line rounded-full px-2.5 py-0.5; }
+}
+
+/* hairline figures, tuned to the Notion palette (light) */
+.fig {
+  --hairline-plate: #ffffff;
+  --hairline-hi: #000000;
+  --hairline-edge: #31302e;
+  --hairline-mid: #a39e98;
+  --hairline-lo: #dfdcd9;
+  --hairline-stroke: 1;
+}
+.fig-tint { --hairline-plate: #f9f9f8; }
+
+/* scroll reveal */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .5s cubic-bezier(.645,.045,.355,1), transform .5s cubic-bezier(.645,.045,.355,1); }
+.reveal.in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } html { scroll-behavior: auto; } }
+
+.reveal.in.card, .card.reveal { transition: opacity .5s cubic-bezier(.645,.045,.355,1), transform .5s cubic-bezier(.645,.045,.355,1), box-shadow .25s cubic-bezier(.645,.045,.355,1); }
