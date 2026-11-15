@@ -5,15 +5,22 @@
 **Full-stack developer · Competitive programmer · NLP researcher**
 Chattogram, Bangladesh
 
+[**🌐 Live site**](https://arch-sakib.vercel.app/) · [Features](#highlights) · [Getting started](#getting-started) · [Routes](#routes) · [Deployment](#deployment)
+
 ![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white&labelColor=20232a)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss&logoColor=white)
 ![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)
 ![Dark mode](https://img.shields.io/badge/Dark%20mode-yes-161616)
+![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-000000?logo=vercel&logoColor=white)
+
+<br />
+
+<a href="https://arch-sakib.vercel.app/">
+  <img src="docs/screenshot.png" alt="Screenshot of the Sakib portfolio home page: pill navbar, animated heading and interactive laptop figure" width="900" />
+</a>
 
 </div>
-
-🌐 **Live site:** [arch-sakib.vercel.app](https://arch-sakib.vercel.app/)
 
 A fast, responsive, installable personal portfolio. Light by default, with an animated dark mode, interactive line-art figures and a working contact form.
 
@@ -22,7 +29,7 @@ A fast, responsive, installable personal portfolio. Light by default, with an an
 ## Highlights
 
 - **Light by default, dark on demand.** First-time visitors always get the light theme. The sun/moon switch reveals the dark theme as a circle growing from the button (View Transitions API, with a soft cross-fade fallback and full `prefers-reduced-motion` support). The choice is remembered on the device and applied before first paint, so there is no flash.
-- **Responsive on every screen.** Mobile bottom tab bar, tablet grids and a wide desktop layout, with safe-area support for notched phones.
+- **Responsive on every screen.** A centered pill navbar with icons on desktop (1280px and up), a floating rounded tab bar on tablets and phones, and a pill-style footer. Checked from 280px foldables to 4K TVs, with safe-area support for notched phones.
 - **Installable PWA.** Offline-first service worker, web manifest, maskable icons and an in-page *Install app* button (with step-by-step help on iOS).
 - **Interactive figures.** Hairline line-art illustrations that react to the pointer, tuned to both themes.
 - **Rich details.** Animated hero heading, brand icons on skills and project tags, scroll-reveal sections, and a downloadable résumé.
@@ -67,6 +74,8 @@ hafiz-landing/
 ├── index.html                 # meta tags, theme-color, no-flash theme script
 ├── tailwind.config.js         # colour tokens (mapped to CSS variables), shadows, fonts
 ├── vercel.json                # rewrites every path to the app (needed for /about etc.)
+├── docs/
+│   └── screenshot.png         # preview image used in this README
 ├── public/
 │   ├── Hafiz-Sakib-CV.pdf     # résumé download
 │   ├── manifest.webmanifest   # PWA manifest
