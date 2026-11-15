@@ -315,7 +315,7 @@ function ThemeToggle({ dark, onToggle }) {
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       aria-pressed={dark}
       title={dark ? "Light mode" : "Dark mode"}
-      className="theme-btn relative grid place-items-center h-9 w-9 shrink-0 rounded-full text-ink hover:bg-hover/60"
+      className="theme-btn relative grid place-items-center h-9 w-9 shrink-0 rounded-full border border-ink-ghost/60 bg-surface text-ink hover:bg-hover/60 hover:border-ink-ghost"
     >
       <Sun
         size={18}
@@ -402,9 +402,6 @@ function Nav() {
           <div className="flex items-center gap-1.5 sm:gap-2">
             <ThemeToggle dark={dark} onToggle={toggleTheme} />
             <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
-            <a href={LINKS.cv} download className="btn-primary !px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" aria-label="Download résumé">
-              <Download size={16} /> <span className="hidden min-[400px]:inline">Résumé</span>
-            </a>
           </div>
         </div>
       </header>
@@ -453,13 +450,18 @@ function AnimatedHeading() {
       {HEADING.map((w, i) => {
         const isName = w === "Sakib.";
         const isLast = w === "ship.";
+        const pulse = { "teach,": 1, track: 2, "ship.": 3 }[w] || 0; // soft highlight sweep
         return (
           <span key={i} aria-hidden="true">
             <span
               className={`hw inline-block ${isName ? "hw-name" : ""} ${isLast ? "relative" : ""}`}
               style={{ animationDelay: `${120 + i * 90}ms` }}
             >
-              {w}
+              {pulse ? (
+                <span className="hw-pulse inline-block" style={{ animationDelay: `${2400 + pulse * 450}ms` }}>{w}</span>
+              ) : (
+                w
+              )}
               {isLast && (
                 <svg className="hw-line absolute left-0 -bottom-1 w-full h-3 text-link" viewBox="0 0 100 12" preserveAspectRatio="none" fill="none">
                   <path d="M2 8 C 20 2, 35 12, 52 6 S 82 2, 98 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength="1" />
@@ -499,8 +501,8 @@ function Hero() {
             <a href="#projects" className="btn-primary text-lg !px-5 !py-2.5">
               View projects <ArrowRight size={18} />
             </a>
-            <a href="#contact" className="btn-secondary text-lg !px-5 !py-2.5">
-              <Mail size={18} /> Contact me
+            <a href={LINKS.cv} download className="btn-secondary text-lg !px-5 !py-2.5">
+              <Download size={18} /> Download résumé
             </a>
             <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="btn-ghost !py-2.5">
               <GithubIcon /> GitHub
