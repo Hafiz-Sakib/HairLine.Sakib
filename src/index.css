@@ -161,3 +161,7 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
 }
 .hw-pulse { animation: word-pulse 5s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .hw-pulse { animation: none; } }
+
+/* brand icons: light colour by default, dark-mode variant when given */
+.ti { color: var(--ic); }
+.dark .ti { color: var(--icd, var(--ic)); }

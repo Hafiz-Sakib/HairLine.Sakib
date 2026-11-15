@@ -30,8 +30,20 @@ import {
   Download,
   GraduationCap,
   LayoutDashboard,
+  Activity,
+  Binary,
+  Boxes,
+  ListChecks,
   Mail,
+  MessageSquareText,
   Moon,
+  Network,
+  Puzzle,
+  RefreshCw,
+  Search,
+  Share2,
+  Sigma,
+  Layers,
   Sun,
   House,
   User,
@@ -48,6 +60,14 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import {
+  SiC, SiCplusplus, SiOpenjdk, SiPython, SiJavascript, SiTypescript, SiDart, SiReact, SiNextdotjs,
+  SiTailwindcss, SiHtml5, SiCss, SiNodedotjs, SiExpress, SiFirebase, SiMongodb, SiPostgresql,
+  SiCodeforces, SiDocker, SiGit, SiLinux, SiVercel, SiFigma, SiGithub, SiVite, SiRedux, SiLatex,
+  SiPandas, SiJupyter, SiFacebook, SiX, SiInstagram, SiLeetcode,
+} from "react-icons/si";
+import { FaAws, FaLinkedin } from "react-icons/fa";
+import { VscVscode } from "react-icons/vsc";
 import { PwaProvider, usePwaInstall } from "./usePwaInstall.jsx";
 
 import profile from "./assets/profile.jpg";
@@ -196,6 +216,73 @@ const SOCIALS = [
   ["X", LINKS.x],
   ["Instagram", LINKS.instagram],
 ];
+
+const INK = "rgb(var(--ink))";
+const LINK = "rgb(var(--link))";
+
+/** skill name -> [icon, colour in light mode, colour in dark mode (optional)] */
+const TECH = {
+  "C": [SiC, "#5b7fa6", "#a8b9cc"],
+  "C++": [SiCplusplus, "#00599c", "#5aa7e8"],
+  "Java": [SiOpenjdk, "#ed8b00"],
+  "Python": [SiPython, "#3776ab", "#5b9bd0"],
+  "JavaScript": [SiJavascript, "#c9a800", "#f7df1e"],
+  "TypeScript": [SiTypescript, "#3178c6", "#5a9fe6"],
+  "Dart": [SiDart, "#0175c2", "#40b0f0"],
+  "React": [SiReact, "#0e9cc4", "#61dafb"],
+  "Next.js": [SiNextdotjs, INK],
+  "Tailwind CSS": [SiTailwindcss, "#06b6d4", "#38bdf8"],
+  "HTML5": [SiHtml5, "#e34f26", "#ff7043"],
+  "CSS3": [SiCss, "#663399", "#b388eb"],
+  "Node.js": [SiNodedotjs, "#339933", "#5fb760"],
+  "Express.js": [SiExpress, INK],
+  "Firebase": [SiFirebase, "#f57c00", "#ffa000"],
+  "MongoDB": [SiMongodb, "#47a248", "#5fc260"],
+  "PostgreSQL": [SiPostgresql, "#4169e1", "#6f8ff0"],
+  "REST APIs": [Network, LINK],
+  "Codeforces": [SiCodeforces, "#1f8acb"],
+  "CSES": [ListChecks, LINK],
+  "Problem Solving": [Puzzle, LINK],
+  "Algorithms": [Binary, LINK],
+  "Dynamic Programming": [Layers, LINK],
+  "Graph Theory": [Share2, LINK],
+  "Binary Search": [Search, LINK],
+  "STL": [Boxes, LINK],
+  "Number Theory": [Sigma, LINK],
+  "Neural Networks": [Network, LINK],
+  "LSTM": [Activity, LINK],
+  "NLP": [MessageSquareText, LINK],
+  "Pandas": [SiPandas, "#150458", "#b9a8ff"],
+  "Jupyter": [SiJupyter, "#f37626"],
+  "AWS": [FaAws, "#e68a00", "#ff9900"],
+  "Docker": [SiDocker, "#2496ed"],
+  "Git": [SiGit, "#f05032"],
+  "Linux": [SiLinux, INK],
+  "Vercel": [SiVercel, INK],
+  "CI/CD": [RefreshCw, LINK],
+  "Figma": [SiFigma, "#f24e1e"],
+  "VS Code": [VscVscode, "#007acc", "#3aa0f0"],
+  "GitHub": [SiGithub, INK],
+  "Vite": [SiVite, "#646cff", "#9aa0ff"],
+  "Redux": [SiRedux, "#764abc", "#a77ee8"],
+  "LaTeX": [SiLatex, "#008080", "#2dbdbd"],
+};
+
+const SOCIAL_ICONS = {
+  GitHub: [SiGithub, INK],
+  LinkedIn: [FaLinkedin, "#0a66c2", "#5aa9f0"],
+  Codeforces: [SiCodeforces, "#1f8acb"],
+  LeetCode: [SiLeetcode, "#ffa116"],
+  Facebook: [SiFacebook, "#1877f2", "#5b9bff"],
+  X: [SiX, INK],
+  Instagram: [SiInstagram, "#e4405f", "#ff6f8c"],
+};
+
+function BrandIcon({ def, size = 14, className = "" }) {
+  if (!def) return null;
+  const [Icon, light, dark] = def;
+  return <Icon size={size} aria-hidden="true" className={`ti shrink-0 ${className}`} style={{ "--ic": light, "--icd": dark || light }} />;
+}
 
 /* ───────────────────────── helpers ───────────────────────── */
 
@@ -626,7 +713,10 @@ function Skills() {
               <h3 className="mt-4 text-xl">{title}</h3>
               <ul className="mt-4 flex flex-wrap gap-1.5">
                 {items.map((s) => (
-                  <li key={s} className="tag">{s}</li>
+                  <li key={s} className="tag inline-flex items-center gap-1.5 !py-1">
+                    <BrandIcon def={TECH[s]} size={14} />
+                    {s}
+                  </li>
                 ))}
               </ul>
             </Reveal>
@@ -876,8 +966,14 @@ function Contact() {
             <ul className="mt-6 flex flex-wrap gap-2">
               {SOCIALS.map(([n, h]) => (
                 <li key={n}>
-                  <a href={h} target="_blank" rel="noopener noreferrer" className="tag !text-sm !px-3 !py-1 hover:bg-hover/60 transition-colors">
-                    {n} ↗
+                  <a
+                    href={h}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tag inline-flex items-center gap-2 !text-sm !px-3 !py-1.5 !border-ink-ghost/50 hover:!border-link hover:bg-hover/60 transition-colors"
+                  >
+                    <BrandIcon def={SOCIAL_ICONS[n]} size={15} />
+                    {n} <span aria-hidden="true" className="text-ink-ghost">↗</span>
                   </a>
                 </li>
               ))}
@@ -916,7 +1012,7 @@ function Contact() {
                 </div>
                 <div>
                   <label htmlFor="c-msg" className={label}>Message</label>
-                  <textarea id="c-msg" required rows={4} className={field} placeholder="Tell me about your idea…" value={form.message} onChange={set("message")} disabled={state === "loading"} />
+                  <textarea id="c-msg" required rows={5} className={`${field} resize-none`} placeholder="Tell me about your idea…" value={form.message} onChange={set("message")} disabled={state === "loading"} />
                 </div>
                 <button type="submit" disabled={state === "loading"} className="btn-primary w-full !py-2.5 disabled:opacity-70 disabled:cursor-not-allowed">
                   {state === "loading" ? (<><LoaderCircle size={16} className="animate-spin" /> Sending…</>) : (<><Send size={16} /> Send message</>)}
