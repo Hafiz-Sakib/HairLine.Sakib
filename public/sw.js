@@ -1,5 +1,5 @@
 /* Sakib portfolio service worker — offline-first shell, runtime caching */
-const VERSION = "v1";
+const VERSION = "v2";
 const CACHE = `sakib-${VERSION}`;
 const PRECACHE = [
   "/",

@@ -2,28 +2,82 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ───────── theme tokens (light default, .dark overrides) ───────── */
+:root {
+  color-scheme: light;
+  --surface: 255 255 255;
+  --card: 255 255 255;
+  --tint: 249 249 248;
+  --ink: 0 0 0;
+  --ink-2: 49 48 46;
+  --ink-muted: 97 93 89;
+  --ink-ghost: 163 158 152;
+  --line: 229 229 229;
+  --hover: 223 220 217;
+  --primary: 0 117 222;
+  --primary-hover: 9 127 232;
+  --primary-active: 0 91 171;
+  --link: 0 117 222;
+  --sky-light: 230 243 254;
+  --sky-dark: 0 91 171;
+  --sky-hover: 209 236 253;
+  --sky-active: 192 227 252;
+  --accent-red: 246 73 50;
+  --focus-ring: #00639b;
+  --name-a: #0075de; --name-b: #5aa9f5; --name-c: #005bab;
+  --shadow-card: rgba(0,0,0,0.01) 0px 0.175px 1.041px 0px, rgba(0,0,0,0.02) 0px 0.8px 2.925px 0px, rgba(0,0,0,0.027) 0px 2.025px 7.847px 0px, rgba(0,0,0,0.04) 0px 4px 18px 0px;
+  --shadow-card-hover: rgba(0,0,0,0.008) 0px 0.667px 3.502px 0px, rgba(0,0,0,0.016) 0px 2.933px 7.252px 0px, rgba(0,0,0,0.02) 0px 7.2px 14.462px 0px, rgba(0,0,0,0.024) 0px 13.867px 28.348px 0px, rgba(0,0,0,0.03) 0px 23.333px 52.123px 0px, rgba(0,0,0,0.04) 0px 36px 89px 0px;
+}
+.dark {
+  color-scheme: dark;
+  --surface: 22 22 22;
+  --card: 34 34 34;
+  --tint: 28 28 28;
+  --ink: 245 244 242;
+  --ink-2: 216 214 211;
+  --ink-muted: 160 156 151;
+  --ink-ghost: 128 124 119;
+  --line: 56 56 56;
+  --hover: 64 64 64;
+  --primary: 0 117 222;
+  --primary-hover: 20 135 240;
+  --primary-active: 0 98 185;
+  --link: 104 176 250;
+  --sky-light: 24 44 68;
+  --sky-dark: 125 190 250;
+  --sky-hover: 31 59 92;
+  --sky-active: 37 71 109;
+  --accent-red: 255 122 104;
+  --focus-ring: #68b0fa;
+  --name-a: #4da3f7; --name-b: #a9d3fc; --name-c: #2f8ae6;
+  --shadow-card: 0 0 0 1px rgb(var(--line)), 0 4px 18px rgba(0,0,0,0.35);
+  --shadow-card-hover: 0 0 0 1px rgb(var(--hover)), 0 12px 36px rgba(0,0,0,0.5);
+}
+
 @layer base {
   html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; }
   body { padding-bottom: env(safe-area-inset-bottom); }
-  body { @apply bg-white text-ink font-sans antialiased; }
+  body { @apply bg-surface text-ink font-sans antialiased; overflow-x: clip; transition: background-color .25s ease, color .25s ease; }
+  img, svg, video { max-width: 100%; }
   h1, h2, h3, h4 { @apply font-bold; line-height: 1.2; }
   h1, h2 { letter-spacing: -0.025em; }
-  :focus-visible { outline: 2px solid #00639b; outline-offset: 2px; }
+  :focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+  ::selection { background: rgb(var(--primary) / .28); }
 }
 
 @layer components {
   .btn { @apply inline-flex items-center justify-center gap-2 text-base font-medium px-[15px] py-[6px] rounded-md cursor-pointer transition-colors duration-250 ease-notion; }
   .btn-primary { @apply btn bg-primary text-white hover:bg-primary-hover active:bg-primary-active; }
-  .btn-secondary { @apply btn bg-sky-light text-sky-dark hover:bg-[#d1ecfd] active:bg-[#c0e3fc]; }
+  .btn-secondary { @apply btn bg-sky-light text-sky-dark hover:bg-sky-hover active:bg-sky-active; }
   .btn-ghost { @apply btn bg-transparent text-ink border border-ink rounded-sm px-[10px] py-[5px] font-normal hover:bg-hover; }
-  .card { @apply bg-white rounded-md shadow-card p-6 transition-shadow duration-250 ease-notion hover:shadow-card-hover; }
+  .card { @apply bg-card rounded-md shadow-card p-6 transition-shadow duration-250 ease-notion hover:shadow-card-hover; }
   .section { @apply px-4 sm:px-10 py-16 md:py-24; }
   .wrap { @apply mx-auto w-full max-w-[1280px]; }
-  .eyebrow { @apply text-sm font-medium text-primary; }
+  .eyebrow { @apply text-sm font-medium text-link; }
   .tag { @apply inline-block text-xs text-ink-muted bg-tint border border-line rounded-full px-2.5 py-0.5; }
 }
 
-/* hairline figures, tuned to the Notion palette (light) */
+/* hairline figures, tuned to the Notion palette (light + dark) */
 .fig {
   --hairline-plate: #ffffff;
   --hairline-hi: #000000;
@@ -33,6 +87,16 @@
   --hairline-stroke: 1;
 }
 .fig-tint { --hairline-plate: #f9f9f8; }
+.dark .fig {
+  --hairline-plate: #161616;
+  --hairline-hi: #f5f4f2;
+  --hairline-edge: #c9c6c2;
+  --hairline-mid: #6b6864;
+  --hairline-lo: #333333;
+}
+.dark .fig-tint { --hairline-plate: #1c1c1c; }
+/* figures that sit inside a card get the card colour as their plate */
+.dark .card .fig { --hairline-plate: #222222; }
 
 /* scroll reveal */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity .5s cubic-bezier(.645,.045,.355,1), transform .5s cubic-bezier(.645,.045,.355,1); }
@@ -46,6 +110,6 @@
 @keyframes shimmer { to { background-position: 200% center; } }
 @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
 .hw { opacity: 0; animation: word-in .7s cubic-bezier(.22,1,.36,1) forwards; }
-.hw-name { background: linear-gradient(90deg,#0075de 0%,#5aa9f5 25%,#0075de 50%,#005bab 75%,#0075de 100%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: word-in .7s cubic-bezier(.22,1,.36,1) forwards, shimmer 3.5s linear 1.2s infinite; }
+.hw-name { background: linear-gradient(90deg,var(--name-a) 0%,var(--name-b) 25%,var(--name-a) 50%,var(--name-c) 75%,var(--name-a) 100%); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: word-in .7s cubic-bezier(.22,1,.36,1) forwards, shimmer 3.5s linear 1.2s infinite; }
 .hw-line path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .9s ease-out 1.5s forwards; }
 @media (prefers-reduced-motion: reduce) { .hw, .hw-name { animation: none; opacity: 1; } .hw-line path { animation: none; stroke-dashoffset: 0; } }

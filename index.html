@@ -12,17 +12,30 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" id="theme-color" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="Sakib" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="color-scheme" content="light dark" />
     <meta name="application-name" content="Sakib" />
 
     <meta property="og:title" content="Sakib" />
     <meta property="og:description" content="Full-stack developer, competitive programmer and NLP researcher." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/icon-512.png" />
+    <script>
+      /* set theme before first paint (no flash) */
+      (function () {
+        try {
+          var t = localStorage.getItem("sakib-theme");
+          var dark = t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (dark) document.documentElement.classList.add("dark");
+          var m = document.getElementById("theme-color");
+          if (m) m.setAttribute("content", dark ? "#161616" : "#ffffff");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

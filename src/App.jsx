@@ -30,6 +30,8 @@ import {
   GraduationCap,
   LayoutDashboard,
   Mail,
+  Moon,
+  Sun,
   House,
   User,
   FolderOpen,
@@ -88,7 +90,7 @@ const ROLES = ["Full-Stack Developer", "Competitive Programmer", "NLP Researcher
 
 const FACTS = [
   ["Based in", "Chattogram, Bangladesh"],
-  ["Studying", "B.Sc. CSE, Premier University"],
+  ["Graduated", "B.Sc. CSE, Premier University"],
   ["Working at", "Pathao Courier (Intern)"],
   ["Researching", "Applied ML & NLP"],
 ];
@@ -170,7 +172,7 @@ const JOBS = [
 ];
 
 const EDU = [
-  { when: "Ongoing", title: "B.Sc. in Computer Science & Engineering", org: "Premier University, Chittagong", text: "Software engineering, algorithms and full-stack development, plus an ongoing applied AI/ML thesis." },
+  { when: "Graduated", title: "B.Sc. in Computer Science & Engineering", org: "Premier University, Chittagong", text: "Software engineering, algorithms and full-stack development, plus an applied AI/ML thesis." },
   { when: "HSC", title: "Higher Secondary Certificate", org: "Govt. Haji Mohammad Mohsin College", text: "" },
   { when: "SSC", title: "Secondary School Certificate", org: "Govt. Muslim High School", text: "" },
 ];
@@ -246,13 +248,61 @@ function InstallButton({ className = "", onDone }) {
   return (
     <button
       type="button"
+      aria-label="Install app"
       className={`btn-secondary ${className}`}
       onClick={async () => {
         await install();
         onDone?.();
       }}
     >
-      <Download size={16} /> Install app
+      <Download size={16} /> <span className="hidden sm:inline">Install app</span>
+    </button>
+  );
+}
+
+/* ───────────────────────── theme ───────────────────────── */
+
+const THEME_KEY = "sakib-theme";
+
+function useTheme() {
+  const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
+
+  const apply = (isDark) => {
+    document.documentElement.classList.toggle("dark", isDark);
+    document.getElementById("theme-color")?.setAttribute("content", isDark ? "#161616" : "#ffffff");
+    setDark(isDark);
+  };
+
+  // follow the OS only while the visitor hasn't chosen a theme themselves
+  useEffect(() => {
+    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!mq) return;
+    const on = (e) => {
+      try { if (localStorage.getItem(THEME_KEY)) return; } catch { /* ignore */ }
+      apply(e.matches);
+    };
+    mq.addEventListener?.("change", on);
+    return () => mq.removeEventListener?.("change", on);
+  }, []);
+
+  const toggle = () => {
+    const next = !dark;
+    try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* ignore */ }
+    apply(next);
+  };
+  return [dark, toggle];
+}
+
+function ThemeToggle({ dark, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      title={dark ? "Light mode" : "Dark mode"}
+      className="grid place-items-center h-9 w-9 shrink-0 rounded-md text-ink hover:bg-hover/60 transition-colors duration-150"
+    >
+      {dark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   );
 }
@@ -289,6 +339,7 @@ function useActiveSection() {
 function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const active = useActiveSection();
+  const [dark, toggleTheme] = useTheme();
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 8);
@@ -301,12 +352,12 @@ function Nav() {
     <>
       {/* Top bar: brand + actions (full links on desktop) */}
       <header
-        className={`sticky top-0 z-[100] bg-white/90 backdrop-blur pt-[env(safe-area-inset-top)] transition-shadow duration-250 ${
-          scrolled ? "shadow-[0_1px_0_0_#e5e5e5]" : ""
+        className={`sticky top-0 z-[100] bg-surface/90 backdrop-blur pt-[env(safe-area-inset-top)] transition-shadow duration-250 ${
+          scrolled ? "shadow-[0_1px_0_0_rgb(var(--line))]" : ""
         }`}
       >
         <div className="wrap flex items-center justify-between gap-3 px-4 sm:px-10 py-2.5 lg:py-3">
-          <a href="#home" className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
+          <a href="#home" className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0">
             <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
             Sakib
           </a>
@@ -318,7 +369,7 @@ function Nav() {
                 href={h}
                 aria-current={active === h ? "page" : undefined}
                 className={`px-3 py-2 rounded-sm text-[15px] transition-colors duration-150 hover:bg-hover/60 ${
-                  active === h ? "text-primary font-medium" : "text-ink"
+                  active === h ? "text-link font-medium" : "text-ink"
                 }`}
               >
                 {l}
@@ -326,7 +377,8 @@ function Nav() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <ThemeToggle dark={dark} onToggle={toggleTheme} />
             <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
             <a href={LINKS.cv} download className="btn-primary !px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" aria-label="Download résumé">
               <Download size={16} /> <span className="hidden min-[400px]:inline">Résumé</span>
@@ -338,7 +390,7 @@ function Nav() {
       {/* Mobile / tablet: bottom tab bar */}
       <nav
         aria-label="Primary"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-[110] bg-white/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-[110] bg-surface/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="flex items-stretch justify-around max-w-xl mx-auto px-1">
           {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
@@ -349,7 +401,7 @@ function Nav() {
                   href={h}
                   aria-current={on ? "page" : undefined}
                   className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors duration-150 ${
-                    on ? "text-primary" : "text-ink-muted"
+                    on ? "text-link" : "text-ink-muted"
                   }`}
                 >
                   <span className={`grid place-items-center h-7 w-12 rounded-full transition-colors duration-250 ${on ? "bg-sky-light" : ""}`}>
@@ -387,7 +439,7 @@ function AnimatedHeading() {
             >
               {w}
               {isLast && (
-                <svg className="hw-line absolute left-0 -bottom-1 w-full h-3 text-primary" viewBox="0 0 100 12" preserveAspectRatio="none" fill="none">
+                <svg className="hw-line absolute left-0 -bottom-1 w-full h-3 text-link" viewBox="0 0 100 12" preserveAspectRatio="none" fill="none">
                   <path d="M2 8 C 20 2, 35 12, 52 6 S 82 2, 98 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength="1" />
                 </svg>
               )}
@@ -404,7 +456,7 @@ function Hero() {
     <section id="home" className="section pt-12 md:pt-20 pb-10 md:pb-16 overflow-hidden">
       <div className="wrap grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-6 items-center">
         <div>
-          <p className="inline-flex items-center gap-2 text-sm text-ink-muted bg-tint border border-line rounded-full pl-2 pr-3 py-1">
+          <p className="inline-flex max-w-full items-center gap-2 text-sm text-ink-2 bg-emerald-500/10 border border-emerald-600/45 dark:border-emerald-400/50 rounded-full pl-2 pr-3 py-1">
             <span className="relative flex w-2 h-2">
               <span className="absolute inline-flex w-full h-full rounded-full bg-green-500 opacity-60 animate-ping" />
               <span className="relative inline-flex w-2 h-2 rounded-full bg-green-500" />
@@ -413,7 +465,7 @@ function Hero() {
           </p>
           <AnimatedHeading />
           <p className="mt-6 max-w-xl text-lg sm:text-xl text-ink-muted leading-relaxed">
-            Mohammad Hafizur Rahman Sakib — CSE student, full-stack developer and problem solver
+            Mohammad Hafizur Rahman Sakib — CSE graduate, full-stack developer and problem solver
             turning complicated ideas into calm, fast software.
           </p>
           <ul className="mt-6 flex flex-wrap gap-2" aria-label="Roles">
@@ -435,7 +487,7 @@ function Hero() {
         </div>
 
         <div className="fig relative mx-auto w-full max-w-[560px]">
-          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-white to-tint" />
+          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-surface to-tint" />
           <Laptop play intensity={0.7} label="A laptop open on its hinge. Move the pointer up and down to lift the lid." />
           <p className="mt-2 text-center text-xs text-ink-ghost">Hover the figure — it answers the pointer.</p>
         </div>
@@ -470,7 +522,7 @@ function About() {
             <p className="eyebrow">About me</p>
             <h2 className="mt-2 text-4xl md:text-5xl">A developer who likes hard problems and simple interfaces.</h2>
             <p className="mt-5 text-lg text-ink-muted leading-relaxed max-w-2xl">
-              I&apos;m a Computer Science &amp; Engineering student at Premier University, Chattogram. I build
+              I&apos;m a Computer Science &amp; Engineering graduate of Premier University, Chattogram. I build
               modern, scalable web apps with React, Next.js, Node.js and Tailwind CSS, backed by a strong
               foundation in data structures and algorithms — 550+ problems solved on LeetCode and Codeforces.
             </p>
@@ -590,7 +642,7 @@ function Projects() {
                 />
               </div>
               <div className="p-6 flex flex-col flex-1">
-                <p className="text-xs font-medium text-primary">{p.kind}</p>
+                <p className="text-xs font-medium text-link">{p.kind}</p>
                 <h3 className="mt-1 text-2xl">{p.title}</h3>
                 <p className="mt-3 text-sm text-ink-muted leading-relaxed flex-1">{p.desc}</p>
                 <div className="mt-4 flex flex-wrap gap-1.5">
@@ -599,7 +651,7 @@ function Projects() {
                   ))}
                 </div>
                 <div className="mt-5 flex items-center gap-4 text-sm font-medium">
-                  <a href={p.demo} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline inline-flex items-center gap-1">
+                  <a href={p.demo} target="_blank" rel="noopener noreferrer" className="text-link hover:underline inline-flex items-center gap-1">
                     Live demo <ArrowUpRight size={14} />
                   </a>
                   <a href={p.code} target="_blank" rel="noopener noreferrer" className="text-ink hover:underline">Source</a>
@@ -637,7 +689,7 @@ function Numbers() {
           <div className="mt-10 grid grid-cols-2 gap-4">
             {STATS.map(([n, l, s], i) => (
               <Reveal key={l} delay={i * 70} className="card !p-5">
-                <div className="text-4xl md:text-5xl font-bold tracking-tight text-primary">{n}</div>
+                <div className="text-4xl md:text-5xl font-bold tracking-tight text-link">{n}</div>
                 <div className="mt-2 text-base font-medium">{l}</div>
                 <div className="text-sm text-ink-muted">{s}</div>
               </Reveal>
@@ -662,12 +714,12 @@ function Timeline({ items, Icon }) {
     <ol className="relative border-l border-line ml-3 space-y-8">
       {items.map(({ when, role, title, org, text }, i) => (
         <Reveal as="li" key={role || title} delay={i * 60} className="pl-8 relative">
-          <span className="absolute -left-[13px] top-0.5 grid place-items-center w-[26px] h-[26px] rounded-full bg-sky-light text-sky-dark ring-4 ring-white">
+          <span className="absolute -left-[13px] top-0.5 grid place-items-center w-[26px] h-[26px] rounded-full bg-sky-light text-sky-dark ring-4 ring-surface">
             <Icon size={14} />
           </span>
           <p className="text-sm text-ink-muted">{when}</p>
           <h3 className="text-xl mt-0.5">{role || title}</h3>
-          <p className="text-base text-primary font-medium">{org}</p>
+          <p className="text-base text-link font-medium">{org}</p>
           {text && <p className="mt-2 text-base text-ink-muted leading-relaxed">{text}</p>}
         </Reveal>
       ))}
@@ -780,7 +832,7 @@ function Contact() {
   };
 
   const field =
-    "w-full bg-white border border-line rounded-sm px-3 py-2.5 text-base placeholder:text-ink-ghost transition-shadow duration-150 focus:outline-none focus:shadow-focus focus:border-primary disabled:bg-tint";
+    "w-full bg-surface border border-line rounded-sm px-3 py-2.5 text-base placeholder:text-ink-ghost transition-shadow duration-150 focus:outline-none focus:shadow-focus focus:border-primary disabled:bg-tint";
   const label = "block text-sm font-medium text-ink-2 mb-1";
 
   return (
@@ -794,7 +846,7 @@ function Contact() {
               Internships, freelance builds or research collaboration — I reply fast.
             </p>
             <p className="mt-6 flex items-center gap-2 text-ink-2"><MapPin size={16} /> Chattogram, Bangladesh</p>
-            <a href={`mailto:${EMAIL}`} className="mt-2 inline-flex items-center gap-2 text-primary font-medium hover:underline break-all">
+            <a href={`mailto:${EMAIL}`} className="mt-2 inline-flex items-center gap-2 text-link font-medium hover:underline break-all">
               <Mail size={16} className="shrink-0" /> {EMAIL}
             </a>
             <ul className="mt-6 flex flex-wrap gap-2">
@@ -808,7 +860,7 @@ function Contact() {
             </ul>
           </div>
 
-          <div className="p-6 sm:p-12 lg:p-14 bg-white border-t lg:border-t-0 lg:border-l border-line">
+          <div className="p-6 sm:p-12 lg:p-14 bg-surface border-t lg:border-t-0 lg:border-l border-line">
             <div className="fig mx-auto w-full max-w-[220px] -mt-2 mb-3">
               <Plug intensity={0.7} label="A plug on its cord. Move the pointer to draw it toward the socket." />
             </div>
@@ -910,7 +962,7 @@ function NotFound() {
     <main className="min-h-[100dvh] grid place-items-center px-4 py-12">
       <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 md:gap-14 items-center">
         <div className="fig mx-auto w-full max-w-[360px] md:order-2 relative">
-          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-white to-tint" />
+          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-surface to-tint" />
           <Query intensity={0.7} play label="A question mark whose hook turns toward the pointer and a loose ball rolling after it." />
         </div>
         <div className="text-center md:text-left md:order-1">
@@ -935,16 +987,16 @@ function IosHelp() {
   const { iosHelp, setIosHelp } = usePwaInstall();
   if (!iosHelp) return null;
   return (
-    <div className="fixed inset-0 z-[300] grid place-items-end sm:place-items-center bg-black/30 p-4" role="dialog" aria-modal="true" aria-label="Install on iPhone" onClick={() => setIosHelp(false)}>
+    <div className="fixed inset-0 z-[300] grid place-items-end sm:place-items-center bg-black/40 dark:bg-black/60 p-4" role="dialog" aria-modal="true" aria-label="Install on iPhone" onClick={() => setIosHelp(false)}>
       <div className="card w-full max-w-sm !p-6" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between">
           <h3 className="text-xl">Install on your iPhone</h3>
           <button aria-label="Close" onClick={() => setIosHelp(false)} className="p-1 -m-1 rounded-sm hover:bg-hover/60"><X size={18} /></button>
         </div>
         <ol className="mt-4 space-y-3 text-base text-ink-2">
-          <li className="flex items-center gap-3"><Share size={18} className="text-primary shrink-0" /> Tap the <strong>Share</strong> button in Safari.</li>
-          <li className="flex items-center gap-3"><SquarePlus size={18} className="text-primary shrink-0" /> Choose <strong>Add to Home Screen</strong>.</li>
-          <li className="flex items-center gap-3"><Download size={18} className="text-primary shrink-0" /> Tap <strong>Add</strong> — done.</li>
+          <li className="flex items-center gap-3"><Share size={18} className="text-link shrink-0" /> Tap the <strong>Share</strong> button in Safari.</li>
+          <li className="flex items-center gap-3"><SquarePlus size={18} className="text-link shrink-0" /> Choose <strong>Add to Home Screen</strong>.</li>
+          <li className="flex items-center gap-3"><Download size={18} className="text-link shrink-0" /> Tap <strong>Add</strong> — done.</li>
         </ol>
       </div>
     </div>
