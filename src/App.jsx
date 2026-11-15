@@ -366,6 +366,39 @@ function Nav() {
   );
 }
 
+const HEADING = [
+  "Hi,", "I'm", "Sakib.", "I", "build", "web", "apps", "that", "teach,", "track", "&", "ship.",
+];
+
+function AnimatedHeading() {
+  return (
+    <h1
+      aria-label="Hi, I'm Sakib. I build web apps that teach, track & ship."
+      className="mt-6 text-[44px] sm:text-6xl lg:text-[72px] leading-[1.08]"
+    >
+      {HEADING.map((w, i) => {
+        const isName = w === "Sakib.";
+        const isLast = w === "ship.";
+        return (
+          <span key={i} aria-hidden="true">
+            <span
+              className={`hw inline-block ${isName ? "hw-name" : ""} ${isLast ? "relative" : ""}`}
+              style={{ animationDelay: `${120 + i * 90}ms` }}
+            >
+              {w}
+              {isLast && (
+                <svg className="hw-line absolute left-0 -bottom-1 w-full h-3 text-primary" viewBox="0 0 100 12" preserveAspectRatio="none" fill="none">
+                  <path d="M2 8 C 20 2, 35 12, 52 6 S 82 2, 98 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" vectorEffect="non-scaling-stroke" pathLength="1" />
+                </svg>
+              )}
+            </span>{" "}
+          </span>
+        );
+      })}
+    </h1>
+  );
+}
+
 function Hero() {
   return (
     <section id="home" className="section pt-12 md:pt-20 pb-10 md:pb-16 overflow-hidden">
@@ -373,14 +406,12 @@ function Hero() {
         <div>
           <p className="inline-flex items-center gap-2 text-sm text-ink-muted bg-tint border border-line rounded-full pl-2 pr-3 py-1">
             <span className="relative flex w-2 h-2">
-              <span className="absolute inline-flex w-full h-full rounded-full bg-accent-orange opacity-60 animate-ping" />
-              <span className="relative inline-flex w-2 h-2 rounded-full bg-accent-orange" />
+              <span className="absolute inline-flex w-full h-full rounded-full bg-green-500 opacity-60 animate-ping" />
+              <span className="relative inline-flex w-2 h-2 rounded-full bg-green-500" />
             </span>
             Open to work · Chattogram, Bangladesh
           </p>
-          <h1 className="mt-6 text-[44px] sm:text-6xl lg:text-[72px] leading-[1.08]">
-            Hi, I&apos;m <span className="text-primary">Sakib</span>. I build web apps that teach, track &amp; ship.
-          </h1>
+          <AnimatedHeading />
           <p className="mt-6 max-w-xl text-lg sm:text-xl text-ink-muted leading-relaxed">
             Mohammad Hafizur Rahman Sakib — CSE student, full-stack developer and problem solver
             turning complicated ideas into calm, fast software.
