@@ -13,3 +13,9 @@ npm run build && npm run preview   # PWA (service worker) only runs on the produ
 - PWA: `public/manifest.webmanifest`, `public/sw.js`, install logic in `src/usePwaInstall.jsx`
 - Icons: `public/icon-*.png`, `apple-touch-icon.png`, `favicon.ico`
 - Deploy on a host that serves `/` for all routes over HTTPS (Vercel, Netlify…); PWA install needs HTTPS.
+
+## Contact form
+Uses Web3Forms (same access key as the portfolio). Override with `VITE_WEB3FORMS_KEY` in a `.env` file.
+
+## 404
+Any path other than `/` renders the hairline 404 page. `vercel.json` and `public/_redirects` serve the app for all paths.

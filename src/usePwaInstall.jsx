@@ -14,6 +14,14 @@ const isStandalone = () =>
     window.matchMedia?.("(display-mode: window-controls-overlay)").matches ||
     window.navigator.standalone === true);
 
+const KEY = "sakib-pwa-installed";
+const wasInstalled = () => {
+  try { return localStorage.getItem(KEY) === "1"; } catch { return false; }
+};
+const markInstalled = () => {
+  try { localStorage.setItem(KEY, "1"); } catch { /* ignore */ }
+};
+
 const isIos = () => {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent;
@@ -23,20 +31,33 @@ const isIos = () => {
 
 export function PwaProvider({ children }) {
   const [deferred, setDeferred] = useState(null);
-  const [installed, setInstalled] = useState(isStandalone());
+  const [installed, setInstalled] = useState(() => {
+    if (isStandalone()) {
+      markInstalled(); // running as the installed app -> remember on this device
+      return true;
+    }
+    return wasInstalled();
+  });
   const [iosHelp, setIosHelp] = useState(false);
 
   useEffect(() => {
     const onPrompt = (e) => {
       e.preventDefault();
+      // Browser only offers the prompt when the app is NOT installed (e.g. it was uninstalled).
+      try { localStorage.removeItem(KEY); } catch { /* ignore */ }
+      setInstalled(false);
       setDeferred(e);
     };
     const onInstalled = () => {
+      markInstalled();
       setInstalled(true);
       setDeferred(null);
     };
     const mq = window.matchMedia?.("(display-mode: standalone)");
-    const onMode = () => setInstalled(isStandalone());
+    const onMode = () => {
+      if (isStandalone()) markInstalled();
+      setInstalled(isStandalone() || wasInstalled());
+    };
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
     mq?.addEventListener?.("change", onMode);
@@ -51,7 +72,10 @@ export function PwaProvider({ children }) {
     if (deferred) {
       deferred.prompt();
       const { outcome } = await deferred.userChoice;
-      if (outcome === "accepted") setInstalled(true);
+      if (outcome === "accepted") {
+        markInstalled();
+        setInstalled(true);
+      }
       setDeferred(null);
     } else if (isIos()) {
       setIosHelp(true);

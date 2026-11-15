@@ -11,6 +11,12 @@ import {
   Drawer,
   Phone,
   Plug,
+  Riffle,
+  Format,
+  Loupe,
+  Rebuild,
+  Padlock,
+  Query,
 } from "@lucasmarkes/hairline/react";
 import {
   ArrowRight,
@@ -24,8 +30,13 @@ import {
   GraduationCap,
   LayoutDashboard,
   Mail,
+  House,
+  User,
+  FolderOpen,
+  CircleCheck,
+  CircleAlert,
+  LoaderCircle,
   MapPin,
-  Menu,
   Send,
   Share,
   SquarePlus,
@@ -248,18 +259,18 @@ function InstallButton({ className = "", onDone }) {
 
 /* ───────────────────────── sections ───────────────────────── */
 
-function Nav() {
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+const MOBILE_NAV = [
+  ["Home", "#home", House],
+  ["About", "#about", User],
+  ["Skills", "#skills", Wrench],
+  ["Projects", "#projects", FolderOpen],
+  ["Experience", "#experience", Briefcase, "hidden sm:flex"],
+  ["Education", "#education", GraduationCap, "hidden sm:flex"],
+  ["Contact", "#contact", Mail],
+];
+
+function useActiveSection() {
   const [active, setActive] = useState("#home");
-
-  useEffect(() => {
-    const on = () => setScrolled(window.scrollY > 8);
-    on();
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
-  }, []);
-
   useEffect(() => {
     if (!("IntersectionObserver" in window)) return;
     const io = new IntersectionObserver(
@@ -272,67 +283,86 @@ function Nav() {
     });
     return () => io.disconnect();
   }, []);
+  return active;
+}
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  const active = useActiveSection();
+
+  useEffect(() => {
+    const on = () => setScrolled(window.scrollY > 8);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
+  }, []);
 
   return (
-    <header
-      className={`sticky top-0 z-[100] bg-white/90 backdrop-blur transition-shadow duration-250 ${
-        scrolled ? "shadow-[0_1px_0_0_#e5e5e5]" : ""
-      }`}
-    >
-      <div className="wrap flex items-center justify-between gap-4 px-4 sm:px-10 py-3">
-        <a href="#home" className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
-          <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
-          Sakib
-        </a>
-
-        <nav className="hidden lg:flex items-center gap-0.5" aria-label="Primary">
-          {NAV.map(([l, h]) => (
-            <a
-              key={h}
-              href={h}
-              aria-current={active === h ? "page" : undefined}
-              className={`px-3 py-2 rounded-sm text-[15px] transition-colors duration-150 hover:bg-hover/60 ${
-                active === h ? "text-primary font-medium" : "text-ink"
-              }`}
-            >
-              {l}
-            </a>
-          ))}
-        </nav>
-
-        <div className="hidden lg:flex items-center gap-2">
-          <InstallButton />
-          <a href={LINKS.cv} download className="btn-primary">
-            <Download size={16} /> Résumé
+    <>
+      {/* Top bar: brand + actions (full links on desktop) */}
+      <header
+        className={`sticky top-0 z-[100] bg-white/90 backdrop-blur pt-[env(safe-area-inset-top)] transition-shadow duration-250 ${
+          scrolled ? "shadow-[0_1px_0_0_#e5e5e5]" : ""
+        }`}
+      >
+        <div className="wrap flex items-center justify-between gap-3 px-4 sm:px-10 py-2.5 lg:py-3">
+          <a href="#home" className="flex items-center gap-2.5 font-bold text-lg tracking-tight">
+            <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
+            Sakib
           </a>
-        </div>
 
-        <button
-          className="lg:hidden p-2 -mr-2 rounded-sm hover:bg-hover/60"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-          onClick={() => setOpen((o) => !o)}
-        >
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
+          <nav className="hidden lg:flex items-center gap-0.5" aria-label="Primary">
+            {NAV.map(([l, h]) => (
+              <a
+                key={h}
+                href={h}
+                aria-current={active === h ? "page" : undefined}
+                className={`px-3 py-2 rounded-sm text-[15px] transition-colors duration-150 hover:bg-hover/60 ${
+                  active === h ? "text-primary font-medium" : "text-ink"
+                }`}
+              >
+                {l}
+              </a>
+            ))}
+          </nav>
 
-      {open && (
-        <div className="lg:hidden border-t border-line bg-white px-4 pb-5">
-          {NAV.map(([l, h]) => (
-            <a key={h} href={h} onClick={() => setOpen(false)} className={`block py-3 text-base border-b border-line/70 ${active === h ? "text-primary font-medium" : ""}`}>
-              {l}
-            </a>
-          ))}
-          <div className="mt-4 flex flex-col gap-2">
-            <InstallButton className="w-full" onDone={() => setOpen(false)} />
-            <a href={LINKS.cv} download className="btn-primary w-full">
-              <Download size={16} /> Résumé
+          <div className="flex items-center gap-2">
+            <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
+            <a href={LINKS.cv} download className="btn-primary !px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" aria-label="Download résumé">
+              <Download size={16} /> <span className="hidden min-[400px]:inline">Résumé</span>
             </a>
           </div>
         </div>
-      )}
-    </header>
+      </header>
+
+      {/* Mobile / tablet: bottom tab bar */}
+      <nav
+        aria-label="Primary"
+        className="lg:hidden fixed bottom-0 inset-x-0 z-[110] bg-white/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
+      >
+        <ul className="flex items-stretch justify-around max-w-xl mx-auto px-1">
+          {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
+            const on = active === h;
+            return (
+              <li key={h} className={`flex-1 ${extra}`}>
+                <a
+                  href={h}
+                  aria-current={on ? "page" : undefined}
+                  className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors duration-150 ${
+                    on ? "text-primary" : "text-ink-muted"
+                  }`}
+                >
+                  <span className={`grid place-items-center h-7 w-12 rounded-full transition-colors duration-250 ${on ? "bg-sky-light" : ""}`}>
+                    <Icon size={20} strokeWidth={on ? 2.25 : 1.75} />
+                  </span>
+                  {l}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </>
   );
 }
 
@@ -374,7 +404,7 @@ function Hero() {
         </div>
 
         <div className="fig relative mx-auto w-full max-w-[560px]">
-          <div className="absolute -inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-white to-tint" />
+          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-white to-tint" />
           <Laptop play intensity={0.7} label="A laptop open on its hinge. Move the pointer up and down to lift the lid." />
           <p className="mt-2 text-center text-xs text-ink-ghost">Hover the figure — it answers the pointer.</p>
         </div>
@@ -504,13 +534,18 @@ function Projects() {
   const [all, setAll] = useState(false);
   const list = all ? PROJECTS : PROJECTS.slice(0, 6);
   return (
-    <section id="projects" className="section">
+    <section id="projects" className="section bg-tint border-y border-line">
       <div className="wrap">
-        <SectionHead eyebrow="Projects" title="Things I've built and shipped.">
-          <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="btn-ghost">
-            All repositories <ArrowUpRight size={16} />
-          </a>
-        </SectionHead>
+        <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-center">
+          <SectionHead eyebrow="Projects" title="Things I've built and shipped." sub="Education tools, utilities and full-stack platforms — most are live and open source.">
+            <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="btn-ghost">
+              All repositories <ArrowUpRight size={16} />
+            </a>
+          </SectionHead>
+          <Reveal className="fig fig-tint mx-auto w-full max-w-[340px]">
+            <Riffle intensity={0.6} label="A tray of eight cards. The card under the pointer stands up." />
+          </Reveal>
+        </div>
 
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((p, i) => (
@@ -555,9 +590,9 @@ function Projects() {
 
 function Numbers() {
   return (
-    <section className="section bg-tint border-y border-line">
+    <section className="section">
       <div className="wrap grid lg:grid-cols-[1fr_1.2fr] gap-12 lg:gap-16 items-center">
-        <Reveal className="fig fig-tint mx-auto w-full max-w-[460px] order-2 lg:order-1">
+        <Reveal className="fig mx-auto w-full max-w-[460px] order-2 lg:order-1">
           <Stack intensity={0.6} label="A call stack of five frames. The pointer's height picks one." />
         </Reveal>
         <div className="order-1 lg:order-2">
@@ -611,7 +646,7 @@ function Timeline({ items, Icon }) {
 
 function Experience() {
   return (
-    <section id="experience" className="section">
+    <section id="experience" className="section bg-tint border-y border-line">
       <div className="wrap grid lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-20 items-center">
         <div>
           <SectionHead eyebrow="Experience" title="Where I've worked." sub="Climbing one floor at a time." />
@@ -619,7 +654,7 @@ function Experience() {
             <Timeline items={JOBS} Icon={Briefcase} />
           </div>
         </div>
-        <Reveal className="fig mx-auto w-full max-w-[460px]">
+        <Reveal className="fig fig-tint mx-auto w-full max-w-[460px]">
           <Elevator intensity={0.6} label="Four floors beside an open shaft. The pointer's height picks a floor." />
         </Reveal>
       </div>
@@ -629,13 +664,13 @@ function Experience() {
 
 function Education() {
   return (
-    <section id="education" className="section bg-tint border-y border-line">
+    <section id="education" className="section">
       <div className="wrap">
         <SectionHead eyebrow="Education" title="Learning, formally and otherwise." />
         <div className="mt-12 grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
           <Timeline items={EDU} Icon={GraduationCap} />
           <div>
-            <Reveal className="fig fig-tint mx-auto w-full max-w-[340px]">
+            <Reveal className="fig mx-auto w-full max-w-[340px]">
               <Drawer intensity={0.6} label="A cabinet of three drawers. The pointer's height picks one." />
             </Reveal>
             <Reveal className="card mt-6 !p-8">
@@ -682,29 +717,54 @@ function InstallCard() {
   );
 }
 
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || "fa7f8ec7-a4a8-424b-8efd-9b6387755682";
+const EMPTY = { name: "", email: "", subject: "", message: "" };
+
 function Contact() {
-  const [form, setForm] = useState({ name: "", message: "" });
-  const submit = (e) => {
+  const [form, setForm] = useState(EMPTY);
+  const [state, setState] = useState("idle"); // idle | loading | success | error
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+
+  const submit = async (e) => {
     e.preventDefault();
-    const subject = encodeURIComponent(`Hello from ${form.name || "your portfolio"}`);
-    const body = encodeURIComponent(`${form.message}\n\n— ${form.name}`);
-    window.location.href = `mailto:${EMAIL}?subject=${subject}&body=${body}`;
+    if (state === "loading") return;
+    setState("loading");
+    const body = new FormData();
+    body.append("access_key", WEB3FORMS_KEY);
+    body.append("name", form.name);
+    body.append("email", form.email);
+    body.append("subject", form.subject || "New Contact Form Submission");
+    body.append("message", form.message);
+    body.append("from_name", "Sakib Portfolio");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", { method: "POST", body });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success !== false) {
+        setState("success");
+        setForm(EMPTY);
+      } else setState("error");
+    } catch {
+      setState("error");
+    }
   };
+
   const field =
-    "w-full bg-white border border-line rounded-sm px-3 py-2 text-base placeholder:text-ink-ghost transition-shadow duration-150 focus:outline-none focus:shadow-focus focus:border-primary";
+    "w-full bg-white border border-line rounded-sm px-3 py-2.5 text-base placeholder:text-ink-ghost transition-shadow duration-150 focus:outline-none focus:shadow-focus focus:border-primary disabled:bg-tint";
+  const label = "block text-sm font-medium text-ink-2 mb-1";
+
   return (
     <section id="contact" className="section">
       <div className="wrap">
-        <Reveal className="rounded-lg bg-tint border border-line overflow-hidden grid lg:grid-cols-2 gap-0 items-center">
-          <div className="p-8 sm:p-12 lg:p-14">
+        <Reveal className="rounded-lg bg-tint border border-line overflow-hidden grid lg:grid-cols-2 items-stretch">
+          <div className="p-6 sm:p-12 lg:p-14 flex flex-col justify-center">
             <p className="eyebrow">Contact</p>
             <h2 className="mt-2 text-4xl md:text-5xl">Have a product to build? Plug me in.</h2>
             <p className="mt-4 text-lg text-ink-muted max-w-md leading-relaxed">
               Internships, freelance builds or research collaboration — I reply fast.
             </p>
             <p className="mt-6 flex items-center gap-2 text-ink-2"><MapPin size={16} /> Chattogram, Bangladesh</p>
-            <a href={`mailto:${EMAIL}`} className="mt-2 inline-flex items-center gap-2 text-primary font-medium hover:underline">
-              <Mail size={16} /> {EMAIL}
+            <a href={`mailto:${EMAIL}`} className="mt-2 inline-flex items-center gap-2 text-primary font-medium hover:underline break-all">
+              <Mail size={16} className="shrink-0" /> {EMAIL}
             </a>
             <ul className="mt-6 flex flex-wrap gap-2">
               {SOCIALS.map(([n, h]) => (
@@ -717,24 +777,51 @@ function Contact() {
             </ul>
           </div>
 
-          <div className="p-8 sm:p-12 lg:p-14 bg-white lg:border-l border-t lg:border-t-0 border-line self-stretch">
-            <div className="fig mx-auto w-full max-w-[260px] -mt-2 mb-2">
+          <div className="p-6 sm:p-12 lg:p-14 bg-white border-t lg:border-t-0 lg:border-l border-line">
+            <div className="fig mx-auto w-full max-w-[220px] -mt-2 mb-3">
               <Plug intensity={0.7} label="A plug on its cord. Move the pointer to draw it toward the socket." />
             </div>
-            <form onSubmit={submit} className="space-y-4">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-ink-2 mb-1">Your name</label>
-                <input id="name" required className={field} placeholder="Jane Doe" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+
+            {state === "success" ? (
+              <div role="status" className="text-center py-8">
+                <span className="mx-auto grid place-items-center w-12 h-12 rounded-full bg-sky-light text-sky-dark">
+                  <CircleCheck size={26} />
+                </span>
+                <h3 className="mt-4 text-2xl">Message sent!</h3>
+                <p className="mt-2 text-ink-muted">Thanks for reaching out — I&apos;ll get back to you soon.</p>
+                <button type="button" className="btn-ghost mt-6" onClick={() => setState("idle")}>Send another</button>
               </div>
-              <div>
-                <label htmlFor="msg" className="block text-sm font-medium text-ink-2 mb-1">Message</label>
-                <textarea id="msg" required rows={4} className={field} placeholder="Tell me about your idea…" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
-              </div>
-              <button type="submit" className="btn-primary w-full !py-2.5">
-                <Send size={16} /> Send message
-              </button>
-              <p className="text-xs text-ink-ghost text-center">Opens your email app with the message ready to send.</p>
-            </form>
+            ) : (
+              <form onSubmit={submit} className="space-y-4">
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="c-name" className={label}>Name</label>
+                    <input id="c-name" required autoComplete="name" className={field} placeholder="Your name" value={form.name} onChange={set("name")} disabled={state === "loading"} />
+                  </div>
+                  <div>
+                    <label htmlFor="c-email" className={label}>Email</label>
+                    <input id="c-email" type="email" required autoComplete="email" className={field} placeholder="you@example.com" value={form.email} onChange={set("email")} disabled={state === "loading"} />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="c-subject" className={label}>Subject</label>
+                  <input id="c-subject" className={field} placeholder="What's it about?" value={form.subject} onChange={set("subject")} disabled={state === "loading"} />
+                </div>
+                <div>
+                  <label htmlFor="c-msg" className={label}>Message</label>
+                  <textarea id="c-msg" required rows={4} className={field} placeholder="Tell me about your idea…" value={form.message} onChange={set("message")} disabled={state === "loading"} />
+                </div>
+                <button type="submit" disabled={state === "loading"} className="btn-primary w-full !py-2.5 disabled:opacity-70 disabled:cursor-not-allowed">
+                  {state === "loading" ? (<><LoaderCircle size={16} className="animate-spin" /> Sending…</>) : (<><Send size={16} /> Send message</>)}
+                </button>
+                {state === "error" && (
+                  <p role="alert" className="flex items-start gap-2 text-sm text-accent-red">
+                    <CircleAlert size={16} className="mt-0.5 shrink-0" />
+                    Couldn&apos;t send right now. Please try again, or email me directly at {EMAIL}.
+                  </p>
+                )}
+              </form>
+            )}
           </div>
         </Reveal>
       </div>
@@ -759,6 +846,60 @@ function Footer() {
   );
 }
 
+const PRINCIPLES = [
+  { Figure: Format, title: "Clean code", text: "Readable, consistent and formatted — every line snaps square to its indent.", label: "A file of crooked lines that snap square under the pointer" },
+  { Figure: Loupe, title: "Eye for detail", text: "Edge cases, spacing, states — the small things users feel but never name.", label: "A loupe magnifying ruled lines" },
+  { Figure: Rebuild, title: "Built to scale", text: "Modular pieces that rebuild cleanly when one dependency changes.", label: "A tree of packages that rise together" },
+  { Figure: Padlock, title: "Secure by default", text: "JWT auth, role-based access and safe payments with Stripe.", label: "A padlock whose shackle lifts as the pointer nears" },
+];
+
+function Principles() {
+  return (
+    <section className="section">
+      <div className="wrap">
+        <SectionHead eyebrow="How I work" title="Principles behind every build." />
+        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {PRINCIPLES.map(({ Figure, title, text, label }, i) => (
+            <Reveal key={title} delay={(i % 4) * 70} className="card flex flex-col !p-5">
+              <div className="fig mx-auto w-full max-w-[240px]">
+                <Figure intensity={0.6} label={label} />
+              </div>
+              <h3 className="mt-3 text-xl">{title}</h3>
+              <p className="mt-2 text-sm text-ink-muted leading-relaxed">{text}</p>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function NotFound() {
+  return (
+    <main className="min-h-[100dvh] grid place-items-center px-4 py-12">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 md:gap-14 items-center">
+        <div className="fig mx-auto w-full max-w-[360px] md:order-2 relative">
+          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-white to-tint" />
+          <Query intensity={0.7} play label="A question mark whose hook turns toward the pointer and a loose ball rolling after it." />
+        </div>
+        <div className="text-center md:text-left md:order-1">
+          <p className="eyebrow">Error 404</p>
+          <h1 className="mt-2 text-5xl sm:text-6xl">This page took a wrong turn.</h1>
+          <p className="mt-4 text-lg text-ink-muted leading-relaxed">
+            The page <code className="font-mono text-base bg-tint border border-line rounded-sm px-1.5 py-0.5 break-all">{window.location.pathname}</code>{" "}
+            doesn&apos;t exist — maybe the link is old, or the address has a typo.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-3">
+            <a href="/" className="btn-primary text-lg !px-5 !py-2.5"><House size={18} /> Back to home</a>
+            <a href="/#projects" className="btn-secondary text-lg !px-5 !py-2.5">View projects <ArrowRight size={18} /></a>
+            <a href="/#contact" className="btn-ghost !py-2.5">Contact</a>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}
+
 function IosHelp() {
   const { iosHelp, setIosHelp } = usePwaInstall();
   if (!iosHelp) return null;
@@ -779,15 +920,19 @@ function IosHelp() {
   );
 }
 
+const KNOWN_PATHS = ["/", "/index.html"];
+
 export default function App() {
+  if (!KNOWN_PATHS.includes(window.location.pathname)) return <NotFound />;
   return (
     <PwaProvider>
       <Nav />
-      <main>
+      <main className="pb-[calc(64px+env(safe-area-inset-bottom))] lg:pb-0">
         <Hero />
         <About />
         <Focus />
         <Skills />
+        <Principles />
         <Projects />
         <Numbers />
         <Experience />
