@@ -580,28 +580,26 @@ function Nav() {
         </div>
       </header>
 
-      {/* Mobile / tablet: bottom tab bar */}
+      {/* Mobile / tablet: floating pill tab bar */}
       <nav
         aria-label="Primary"
-        className="xl:hidden fixed bottom-0 inset-x-0 z-[110] bg-surface/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
+        className="xl:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
       >
-        <ul className="flex items-stretch justify-around max-w-xl mx-auto px-1">
+        <ul className="pointer-events-auto flex items-stretch justify-around gap-0.5 max-w-md mx-auto p-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-link/40 ring-1 ring-link/10 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.25)]">
           {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
             const on = active === h;
             return (
-              <li key={h} className={`flex-1 ${extra}`}>
+              <li key={h} className={`flex-1 min-w-0 ${extra}`}>
                 <a
                   href={pathOf(idOf(h))}
                   onClick={(e) => goTo(e, idOf(h))}
                   aria-current={on ? "page" : undefined}
-                  className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors duration-150 ${
-                    on ? "text-link" : "text-ink-muted"
+                  className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-full border text-[10.5px] sm:text-[11px] font-semibold leading-tight transition-colors duration-150 ${
+                    on ? "bg-primary text-white border-sky-dark shadow-sm" : "border-transparent text-ink-muted hover:text-link hover:bg-link/10"
                   }`}
                 >
-                  <span className={`grid place-items-center h-7 w-12 rounded-full transition-colors duration-250 ${on ? "bg-sky-light" : ""}`}>
-                    <Icon size={20} strokeWidth={on ? 2.25 : 1.75} />
-                  </span>
-                  {l}
+                  <Icon size={19} strokeWidth={on ? 2.25 : 1.9} aria-hidden="true" />
+                  <span className="truncate max-w-full">{l}</span>
                 </a>
               </li>
             );
@@ -1246,7 +1244,7 @@ export default function App() {
   return (
     <PwaProvider>
       <Nav />
-      <main className="pb-[calc(64px+env(safe-area-inset-bottom))] xl:pb-0">
+      <main className="pb-[calc(88px+env(safe-area-inset-bottom))] xl:pb-0">
         <Hero />
         <About />
         <Focus />
