@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import {
   Laptop,
   Keyboard,
@@ -264,31 +265,44 @@ function InstallButton({ className = "", onDone }) {
 
 const THEME_KEY = "sakib-theme";
 
+/** Light by default. Dark only after the visitor switches it on (remembered on this device). */
 function useTheme() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
 
   const apply = (isDark) => {
     document.documentElement.classList.toggle("dark", isDark);
-    document.getElementById("theme-color")?.setAttribute("content", isDark ? "#161616" : "#ffffff");
+    document.getElementById("theme-color")?.setAttribute("content", isDark ? "#0a0c14" : "#ffffff");
     setDark(isDark);
   };
 
-  // follow the OS only while the visitor hasn't chosen a theme themselves
-  useEffect(() => {
-    const mq = window.matchMedia?.("(prefers-color-scheme: dark)");
-    if (!mq) return;
-    const on = (e) => {
-      try { if (localStorage.getItem(THEME_KEY)) return; } catch { /* ignore */ }
-      apply(e.matches);
-    };
-    mq.addEventListener?.("change", on);
-    return () => mq.removeEventListener?.("change", on);
-  }, []);
-
-  const toggle = () => {
+  const toggle = (e) => {
     const next = !dark;
     try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* ignore */ }
-    apply(next);
+
+    const root = document.documentElement;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const run = () => flushSync(() => apply(next));
+
+    if (!reduce && typeof document.startViewTransition === "function") {
+      // circular reveal growing from the toggle button
+      const r = e?.currentTarget?.getBoundingClientRect();
+      const x = r ? r.left + r.width / 2 : window.innerWidth / 2;
+      const y = r ? r.top + r.height / 2 : 0;
+      const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+      root.style.setProperty("--tx", `${x}px`);
+      root.style.setProperty("--ty", `${y}px`);
+      root.style.setProperty("--tr", `${radius}px`);
+      root.classList.add("theme-anim");
+      const t = document.startViewTransition(run);
+      t.finished.finally(() => root.classList.remove("theme-anim"));
+    } else if (!reduce) {
+      // fallback: soft cross-fade
+      root.classList.add("theme-fade");
+      run();
+      setTimeout(() => root.classList.remove("theme-fade"), 450);
+    } else {
+      run();
+    }
   };
   return [dark, toggle];
 }
@@ -299,10 +313,18 @@ function ThemeToggle({ dark, onToggle }) {
       type="button"
       onClick={onToggle}
       aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-pressed={dark}
       title={dark ? "Light mode" : "Dark mode"}
-      className="grid place-items-center h-9 w-9 shrink-0 rounded-md text-ink hover:bg-hover/60 transition-colors duration-150"
+      className="theme-btn relative grid place-items-center h-9 w-9 shrink-0 rounded-full text-ink hover:bg-hover/60"
     >
-      {dark ? <Sun size={18} /> : <Moon size={18} />}
+      <Sun
+        size={18}
+        className={`ico absolute ${dark ? "opacity-0 scale-0 rotate-[120deg]" : "opacity-100 scale-100 rotate-0 text-amber-500"}`}
+      />
+      <Moon
+        size={18}
+        className={`ico absolute ${dark ? "opacity-100 scale-100 rotate-0 text-link" : "opacity-0 scale-0 -rotate-[120deg]"}`}
+      />
     </button>
   );
 }

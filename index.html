@@ -25,14 +25,13 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/icon-512.png" />
     <script>
-      /* set theme before first paint (no flash) */
+      /* light by default; dark only if the visitor chose it. Applied before first paint. */
       (function () {
         try {
-          var t = localStorage.getItem("sakib-theme");
-          var dark = t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var dark = localStorage.getItem("sakib-theme") === "dark";
           if (dark) document.documentElement.classList.add("dark");
           var m = document.getElementById("theme-color");
-          if (m) m.setAttribute("content", dark ? "#161616" : "#ffffff");
+          if (m) m.setAttribute("content", dark ? "#0a0c14" : "#ffffff");
         } catch (e) {}
       })();
     </script>
