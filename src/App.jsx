@@ -545,20 +545,32 @@ function Nav() {
             Sakib
           </a>
 
-          <nav className="hidden lg:flex items-center gap-0.5" aria-label="Primary">
-            {NAV.map(([l, h]) => (
-              <a
-                key={h}
-                href={pathOf(idOf(h))}
-                onClick={(e) => goTo(e, idOf(h))}
-                aria-current={active === h ? "page" : undefined}
-                className={`px-3 py-2 rounded-sm text-[15px] transition-colors duration-150 hover:bg-hover/60 ${
-                  active === h ? "text-link font-medium" : "text-ink"
-                }`}
-              >
-                {l}
-              </a>
-            ))}
+          <nav
+            className="hidden lg:flex items-center h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
+            aria-label="Primary"
+          >
+            <ul className="flex items-center gap-1">
+              {MOBILE_NAV.map(([l, h, Icon]) => {
+                const on = active === h;
+                return (
+                  <li key={h}>
+                    <a
+                      href={pathOf(idOf(h))}
+                      onClick={(e) => goTo(e, idOf(h))}
+                      aria-current={on ? "page" : undefined}
+                      className={`flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 rounded-full text-[15px] font-semibold whitespace-nowrap border transition-colors duration-150 ${
+                        on
+                          ? "bg-primary text-white border-sky-dark shadow-sm"
+                          : "border-transparent text-ink-2 hover:text-link hover:bg-link/10"
+                      }`}
+                    >
+                      <Icon size={16} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+                      {l}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
           </nav>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
