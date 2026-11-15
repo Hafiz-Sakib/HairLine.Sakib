@@ -539,14 +539,14 @@ function Nav() {
           scrolled ? "shadow-[0_1px_0_0_rgb(var(--line))]" : ""
         }`}
       >
-        <div className="wrap flex items-center justify-between gap-3 px-4 sm:px-10 py-2.5 lg:py-3">
-          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0">
+        <div className="w-full max-w-[1920px] mx-auto flex xl:grid xl:grid-cols-[1fr_auto_1fr] items-center justify-between gap-3 px-4 sm:px-10 xl:px-12 py-2.5 xl:py-3">
+          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0 xl:justify-self-start">
             <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
             Sakib
           </a>
 
           <nav
-            className="hidden lg:flex items-center h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
+            className="hidden xl:flex items-center h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
             aria-label="Primary"
           >
             <ul className="flex items-center gap-1">
@@ -573,7 +573,7 @@ function Nav() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 xl:justify-self-end">
             <ThemeToggle dark={dark} onToggle={toggleTheme} />
             <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
           </div>
@@ -583,7 +583,7 @@ function Nav() {
       {/* Mobile / tablet: bottom tab bar */}
       <nav
         aria-label="Primary"
-        className="lg:hidden fixed bottom-0 inset-x-0 z-[110] bg-surface/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
+        className="xl:hidden fixed bottom-0 inset-x-0 z-[110] bg-surface/95 backdrop-blur border-t border-line pb-[env(safe-area-inset-bottom)]"
       >
         <ul className="flex items-stretch justify-around max-w-xl mx-auto px-1">
           {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
@@ -1246,7 +1246,7 @@ export default function App() {
   return (
     <PwaProvider>
       <Nav />
-      <main className="pb-[calc(64px+env(safe-area-inset-bottom))] lg:pb-0">
+      <main className="pb-[calc(64px+env(safe-area-inset-bottom))] xl:pb-0">
         <Hero />
         <About />
         <Focus />
