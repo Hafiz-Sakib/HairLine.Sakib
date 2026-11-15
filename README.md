@@ -13,6 +13,8 @@ Chattogram, Bangladesh
 
 </div>
 
+🌐 **Live site:** [arch-sakib.vercel.app](https://arch-sakib.vercel.app/)
+
 A fast, responsive, installable personal portfolio. Light by default, with an animated dark mode, interactive line-art figures and a working contact form.
 
 ---
@@ -25,7 +27,8 @@ A fast, responsive, installable personal portfolio. Light by default, with an an
 - **Interactive figures.** Hairline line-art illustrations that react to the pointer, tuned to both themes.
 - **Rich details.** Animated hero heading, brand icons on skills and project tags, scroll-reveal sections, and a downloadable résumé.
 - **Working contact form.** Sends through Web3Forms with loading, success and error states.
-- **Custom 404 page** for any path other than `/`.
+- **Clean section URLs.** Navbar links open `/about`, `/skills`, `/projects` and so on, with no `#` in the address. Old `/#about` links are redirected to `/about`.
+- **Custom 404 page** for any path that is not `/` or one of the section routes.
 
 ## Tech stack
 
@@ -63,7 +66,7 @@ npm run preview
 hafiz-landing/
 ├── index.html                 # meta tags, theme-color, no-flash theme script
 ├── tailwind.config.js         # colour tokens (mapped to CSS variables), shadows, fonts
-├── vercel.json                # rewrites every path to the app
+├── vercel.json                # rewrites every path to the app (needed for /about etc.)
 ├── public/
 │   ├── Hafiz-Sakib-CV.pdf     # résumé download
 │   ├── manifest.webmanifest   # PWA manifest
@@ -72,7 +75,7 @@ hafiz-landing/
 │   └── icon-*.png, favicon-*  # app and browser icons
 └── src/
     ├── main.jsx               # entry point, service worker registration
-    ├── App.jsx                # content data, sections and components
+    ├── App.jsx                # content data, section routing, sections and components
     ├── index.css              # theme tokens (light + dark), animations, components
     ├── usePwaInstall.jsx      # install-prompt state (Android/desktop/iOS)
     └── assets/                # profile photo and project screenshots
@@ -103,6 +106,24 @@ Colours are CSS variables defined in `src/index.css` (`:root` for light, `.dark`
 - Figure colours for each theme are set in the `.fig` rules in `src/index.css`.
 - The browser `theme-color` is updated when the theme changes.
 
+## Routes
+
+The site is a single page. Each section has its own clean URL that scrolls to that section (smooth scroll on click, back/forward supported):
+
+| URL | Section |
+| --- | --- |
+| `/` | Home |
+| `/about` | About |
+| `/skills` | Skills |
+| `/projects` | Projects |
+| `/experience` | Experience |
+| `/education` | Education |
+| `/contact` | Contact |
+
+Any other path shows the custom 404 page. Routes are listed in `SECTION_PATHS` at the top of `src/App.jsx`; to add a section, give it an `id`, add it to `NAV` and `SECTION_PATHS`.
+
+> Direct visits to `/about` work only because the host serves `index.html` for every path. That is already configured in `vercel.json` (Vercel) and `public/_redirects` (Netlify).
+
 ## Contact form
 
 The form posts to Web3Forms. To use your own access key, create a `.env` file:
@@ -120,7 +141,7 @@ Restart the dev server after changing it. For production, set the same variable 
 3. Add `VITE_WEB3FORMS_KEY` in the project's environment variables if you use your own key.
 4. Deploy. PWA installation requires HTTPS, which these hosts provide by default.
 
-`vercel.json` and `public/_redirects` make sure every path is served by the app, which is what lets the custom 404 page work.
+`vercel.json` and `public/_redirects` make sure every path is served by the app, which is what lets section URLs like `/about` and the custom 404 page work. The live site is deployed at [arch-sakib.vercel.app](https://arch-sakib.vercel.app/).
 
 **After a release:** if returning visitors do not see your changes, bump `VERSION` in `public/sw.js` (for example `v3` to `v4`) so the old cache is replaced.
 

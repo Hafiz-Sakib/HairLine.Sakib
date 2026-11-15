@@ -112,6 +112,53 @@ const NAV = [
   ["Contact", "#contact"],
 ];
 
+
+/* ───────────── clean-URL section routing (/about instead of /#about) ───────────── */
+
+const SECTION_PATHS = ["home", "about", "skills", "projects", "experience", "education", "contact"];
+const idOf = (href) => href.replace(/^\/?#?\/?/, "") || "home";
+const pathOf = (id) => (id === "home" ? "/" : `/${id}`);
+const currentSection = () => {
+  const seg = window.location.pathname.replace(/^\/+|\/+$/g, "");
+  return seg === "" || seg === "index.html" ? "home" : seg;
+};
+
+function scrollToSection(id, smooth = true) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (id === "home") return window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
+  el.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" });
+}
+
+/* Click handler for in-page nav links: keeps the URL clean, no hash. */
+function goTo(e, id) {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  const path = pathOf(id);
+  if (window.location.pathname !== path) window.history.pushState({ section: id }, "", path);
+  scrollToSection(id);
+}
+
+/* On first load (and back/forward) scroll to the section named by the URL. */
+function useSectionRouting() {
+  useEffect(() => {
+    // Old links like /#about are rewritten to /about.
+    const legacy = window.location.hash.replace("#", "");
+    if (legacy && SECTION_PATHS.includes(legacy)) {
+      window.history.replaceState({ section: legacy }, "", pathOf(legacy));
+    }
+    const id = currentSection();
+    let t;
+    if (id !== "home") t = setTimeout(() => scrollToSection(id, false), 120);
+    const onPop = () => scrollToSection(currentSection());
+    window.addEventListener("popstate", onPop);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("popstate", onPop);
+    };
+  }, []);
+}
+
 const ROLES = ["Full-Stack Developer", "Competitive Programmer", "NLP Researcher", "ML Practitioner"];
 
 const FACTS = [
@@ -493,7 +540,7 @@ function Nav() {
         }`}
       >
         <div className="wrap flex items-center justify-between gap-3 px-4 sm:px-10 py-2.5 lg:py-3">
-          <a href="#home" className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0">
+          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0">
             <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
             Sakib
           </a>
@@ -502,7 +549,8 @@ function Nav() {
             {NAV.map(([l, h]) => (
               <a
                 key={h}
-                href={h}
+                href={pathOf(idOf(h))}
+                onClick={(e) => goTo(e, idOf(h))}
                 aria-current={active === h ? "page" : undefined}
                 className={`px-3 py-2 rounded-sm text-[15px] transition-colors duration-150 hover:bg-hover/60 ${
                   active === h ? "text-link font-medium" : "text-ink"
@@ -531,7 +579,8 @@ function Nav() {
             return (
               <li key={h} className={`flex-1 ${extra}`}>
                 <a
-                  href={h}
+                  href={pathOf(idOf(h))}
+                  onClick={(e) => goTo(e, idOf(h))}
                   aria-current={on ? "page" : undefined}
                   className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors duration-150 ${
                     on ? "text-link" : "text-ink-muted"
@@ -612,7 +661,7 @@ function Hero() {
             ))}
           </ul>
           <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href="#projects" className="btn-primary text-lg !px-5 !py-2.5">
+            <a href="/projects" onClick={(e) => goTo(e, "projects")} className="btn-primary text-lg !px-5 !py-2.5">
               View projects <ArrowRight size={18} />
             </a>
             <a href={LINKS.cv} download className="btn-secondary text-lg !px-5 !py-2.5">
@@ -1095,7 +1144,7 @@ function Footer() {
             <GithubIcon width={16} height={16} /> GitHub
           </a>
           <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="hover:text-ink">LinkedIn</a>
-          <a href="#home" className="hover:text-ink">Back to top ↑</a>
+          <a href="/" onClick={(e) => goTo(e, "home")} className="hover:text-ink">Back to top ↑</a>
         </div>
       </div>
     </footer>
@@ -1147,8 +1196,8 @@ function NotFound() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center md:justify-start gap-3">
             <a href="/" className="btn-primary text-lg !px-5 !py-2.5"><House size={18} /> Back to home</a>
-            <a href="/#projects" className="btn-secondary text-lg !px-5 !py-2.5">View projects <ArrowRight size={18} /></a>
-            <a href="/#contact" className="btn-ghost !py-2.5">Contact</a>
+            <a href="/projects" className="btn-secondary text-lg !px-5 !py-2.5">View projects <ArrowRight size={18} /></a>
+            <a href="/contact" className="btn-ghost !py-2.5">Contact</a>
           </div>
         </div>
       </div>
@@ -1176,10 +1225,12 @@ function IosHelp() {
   );
 }
 
-const KNOWN_PATHS = ["/", "/index.html"];
+const KNOWN_PATHS = ["/", "/index.html", ...SECTION_PATHS.filter((x) => x !== "home").map((x) => `/${x}`)];
 
 export default function App() {
-  if (!KNOWN_PATHS.includes(window.location.pathname)) return <NotFound />;
+  const known = KNOWN_PATHS.includes(window.location.pathname.replace(/(.)\/+$/, "$1"));
+  useSectionRouting();
+  if (!known) return <NotFound />;
   return (
     <PwaProvider>
       <Nav />
