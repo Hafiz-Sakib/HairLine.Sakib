@@ -854,18 +854,18 @@ function Projects() {
 
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {list.map((p, i) => (
-            <Reveal key={p.title} delay={(i % 3) * 80} as="article" className="card !p-0 overflow-hidden flex flex-col group">
-              <div className="relative aspect-[16/10] overflow-hidden bg-tint border-b border-line">
+            <Reveal key={p.title} delay={(i % 3) * 80} as="article" className="card proj-card !p-0 overflow-hidden flex flex-col group">
+              <div className="proj-media relative aspect-[16/10] overflow-hidden bg-tint border-b border-line">
                 <img
                   src={p.img}
                   alt={`${p.title} screenshot`}
                   loading="lazy"
-                  className="w-full h-full object-cover object-top transition-transform duration-500 ease-notion group-hover:scale-[1.03]"
+                  className="w-full h-full object-cover object-top transition-transform duration-700 ease-notion group-hover:scale-[1.08]"
                 />
               </div>
               <div className="p-6 flex flex-col flex-1">
                 <p className="text-xs font-medium text-link">{p.kind}</p>
-                <h3 className="mt-1 text-2xl">{p.title}</h3>
+                <h3 className="mt-1 text-2xl transition-colors duration-300 group-hover:text-link">{p.title}</h3>
                 <p className="mt-3 text-sm text-ink-muted leading-relaxed flex-1">{p.desc}</p>
                 <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Tech stack">
                   {p.tags.map((t) => (
@@ -874,7 +874,7 @@ function Projects() {
                 </ul>
                 <div className="mt-5 flex items-center gap-4 text-sm font-medium">
                   <a href={p.demo} target="_blank" rel="noopener noreferrer" className="text-link hover:underline inline-flex items-center gap-1.5">
-                    <Globe size={15} /> Live demo <ArrowUpRight size={14} />
+                    <Globe size={15} /> Live demo <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </a>
                   <a href={p.code} target="_blank" rel="noopener noreferrer" className="text-ink hover:underline inline-flex items-center gap-1.5">
                     <GithubIcon width={15} height={15} /> Source

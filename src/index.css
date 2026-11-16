@@ -178,3 +178,26 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
 .sent-ring { animation: sent-ring 1.4s ease-out .35s 2 both; }
 .sent-tick { stroke-dasharray: 1; stroke-dashoffset: 1; animation: sent-tick .5s ease-out .5s forwards; }
 @media (prefers-reduced-motion: reduce) { .sent-backdrop, .sent-card, .sent-pop, .sent-ring { animation: none; } .sent-tick { animation: none; stroke-dashoffset: 0; } }
+
+/* ───────── card borders + project card hover ───────── */
+.card { border: 1px solid rgb(var(--line) / .85); }
+.dark .card { border-color: rgb(var(--line) / .7); }
+
+.reveal.in.proj-card {
+  transition: transform .4s cubic-bezier(.22,1,.36,1), box-shadow .4s ease, border-color .3s ease, opacity .5s ease;
+}
+.reveal.in.proj-card:hover {
+  transform: translateY(-8px);
+  border-color: rgb(var(--link) / .55);
+  box-shadow: 0 22px 44px -18px rgb(var(--link) / .35), 0 0 0 1px rgb(var(--link) / .12);
+}
+.proj-media::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.28) 50%, transparent 65%);
+  transform: translateX(-120%);
+}
+.proj-card:hover .proj-media::after { transform: translateX(120%); transition: transform .9s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal.in.proj-card:hover { transform: none; }
+  .proj-card:hover .proj-media::after { transition: none; }
+}
