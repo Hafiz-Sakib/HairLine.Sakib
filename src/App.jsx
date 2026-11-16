@@ -23,6 +23,8 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowUpRight,
+  ExternalLink,
+  BookOpen,
   X as CloseIcon,
   Brain,
   Briefcase,
@@ -253,12 +255,13 @@ const EDU = [
 ];
 
 const CERTS = [
-  ["Supervised Machine Learning: Regression and Classification", "2025"],
-  ["Data Science, ML, DL & NLP Bootcamp", "2024"],
-  ["Number Theory Fundamentals", "2023"],
-  ["Problem Solving (Basic & Intermediate)", "2022"],
-  ["Python Complete Course for Beginners", "2022"],
-  ["Full Stack Web Development (Batch 5)", "2021 – 22"],
+  { title: "Supervised Machine Learning: Regression and Classification", provider: "Coursera", year: "2025", url: "https://coursera.org/share/be11b6c4db8d1978211a309bbf3832d4" },
+  { title: "Complete Data Science, Machine Learning, DL, NLP Bootcamp", provider: "Udemy", year: "2024", url: "https://www.udemy.com/course/complete-machine-learning-nlp-bootcamp-mlops-deployment/" },
+  { title: "Number Theory Fundamentals", provider: "Udemy", year: "2023", url: "https://www.udemy.com/course/number-theory-fundamentals/" },
+  { title: "Problem Solving (Basic) Certificate", provider: "HackerRank", year: "2022", url: "https://www.hackerrank.com/certificates/96a1aa85c641" },
+  { title: "Problem Solving (Intermediate) Certificate", provider: "HackerRank", year: "2022", url: "https://www.hackerrank.com/certificates/f293a98f33f8" },
+  { title: "Python Complete Course For Python Beginners", provider: "Udemy", year: "2022", url: "https://www.udemy.com/course/python-complete-course-for-beginners/" },
+  { title: "Full Stack Web Development (Batch 5)", provider: "Programming Hero", year: "2021 – 2022", url: "https://web.programming-hero.com/course-details" },
 ];
 
 const SOCIALS = [
@@ -1007,11 +1010,25 @@ function Education() {
                 <p className="text-sm text-ink-muted">{CERTS.length} completed</p>
               </div>
             </div>
-            <ul className="mt-6 divide-y divide-line flex-1">
-              {CERTS.map(([t, y]) => (
-                <li key={t} className="py-3.5 flex items-start justify-between gap-4">
-                  <span className="text-base text-ink-2 leading-snug">{t}</span>
-                  <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap tabular-nums shrink-0">{y}</span>
+            <ul className="mt-5 flex-1 flex flex-col">
+              {CERTS.map(({ title, provider, year, url }) => (
+                <li key={title} className="border-b border-line last:border-b-0">
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 -mx-3 px-3 py-3.5 rounded-md transition-colors hover:bg-sky-light/50"
+                  >
+                    <span className="flex items-center gap-2.5 min-w-0">
+                      <BookOpen size={16} aria-hidden="true" className="shrink-0 text-ink-ghost transition-colors group-hover:text-link" />
+                      <span className="text-base text-ink-2 leading-snug transition-colors group-hover:text-link">{title}</span>
+                      <ExternalLink size={13} aria-hidden="true" className="shrink-0 text-link opacity-0 transition-opacity group-hover:opacity-100" />
+                    </span>
+                    <span className="flex items-center gap-2 pl-[26px] sm:pl-0 shrink-0 text-sm text-ink-muted">
+                      <span className="italic">{provider}</span>
+                      <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap tabular-nums">{year}</span>
+                    </span>
+                  </a>
                 </li>
               ))}
             </ul>
