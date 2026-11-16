@@ -10,7 +10,6 @@ import {
   Stack,
   Elevator,
   Cabinet,
-  Phone,
   Plug,
   Riffle,
   Format,
@@ -1039,32 +1038,6 @@ function Education() {
   );
 }
 
-function InstallCard() {
-  const { status, install, setIosHelp } = usePwaInstall();
-  if (status === "none") return null;
-  return (
-    <section className="section pb-0">
-      <div className="wrap">
-        <Reveal className="rounded-lg bg-sky-light/60 border border-sky-light overflow-hidden grid md:grid-cols-[1.2fr_1fr] items-center">
-          <div className="p-8 sm:p-12">
-            <p className="eyebrow">Install</p>
-            <h2 className="mt-2 text-3xl md:text-4xl">Keep this portfolio on your home screen.</h2>
-            <p className="mt-4 text-lg text-ink-muted max-w-md leading-relaxed">
-              Works offline, opens instantly and feels like a native app — no app store needed.
-            </p>
-            <button type="button" className="btn-primary mt-7 text-lg !px-5 !py-2.5" onClick={() => (status === "ios" ? setIosHelp(true) : install())}>
-              <Download size={18} /> {status === "ios" ? "How to install" : "Install app"}
-            </button>
-          </div>
-          <div className="fig mx-auto w-full max-w-[300px] p-6 md:p-8">
-            <Phone intensity={0.7} label="A phone in layers: glass, board, battery, shell." />
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || "fa7f8ec7-a4a8-424b-8efd-9b6387755682";
 const EMPTY = { name: "", email: "", subject: "", message: "" };
 
@@ -1414,7 +1387,6 @@ export default function App() {
         <Numbers />
         <Experience />
         <Education />
-        <InstallCard />
         <Contact />
       </main>
       <Footer />
