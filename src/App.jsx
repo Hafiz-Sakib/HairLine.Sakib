@@ -540,17 +540,17 @@ function Nav() {
           scrolled ? "shadow-[0_1px_0_0_rgb(var(--line))]" : ""
         }`}
       >
-        <div className="w-full max-w-[1920px] mx-auto flex md:grid md:grid-cols-[auto_1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center justify-between gap-2 lg:gap-3 px-4 sm:px-6 lg:px-12 py-2.5 md:py-3">
-          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0 md:justify-self-start">
+        <div className="w-full max-w-[1920px] mx-auto flex xl:grid xl:grid-cols-[1fr_auto_1fr] items-center justify-between gap-3 px-4 sm:px-10 xl:px-12 py-2.5 xl:py-3">
+          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0 xl:justify-self-start">
             <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
             Sakib
           </a>
 
           <nav
-            className="hidden md:flex items-center justify-self-center h-10 lg:h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
+            className="hidden xl:flex items-center h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
             aria-label="Primary"
           >
-            <ul className="flex items-center gap-0.5 lg:gap-1">
+            <ul className="flex items-center gap-1">
               {MOBILE_NAV.map(([l, h, Icon]) => {
                 const on = active === h;
                 return (
@@ -559,13 +559,13 @@ function Nav() {
                       href={pathOf(idOf(h))}
                       onClick={(e) => goTo(e, idOf(h))}
                       aria-current={on ? "page" : undefined}
-                      className={`flex items-center gap-1.5 px-2 lg:px-3.5 py-1.5 rounded-full text-[13px] lg:text-[15px] font-semibold whitespace-nowrap border transition-colors duration-150 ${
+                      className={`flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 rounded-full text-[15px] font-semibold whitespace-nowrap border transition-colors duration-150 ${
                         on
                           ? "bg-primary text-white border-sky-dark shadow-sm"
                           : "border-transparent text-ink-2 hover:text-link hover:bg-link/10"
                       }`}
                     >
-                      <Icon size={15} strokeWidth={2} className="shrink-0 hidden min-[900px]:block" aria-hidden="true" />
+                      <Icon size={16} strokeWidth={2} className="shrink-0" aria-hidden="true" />
                       {l}
                     </a>
                   </li>
@@ -574,7 +574,7 @@ function Nav() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 md:justify-self-end">
+          <div className="flex items-center gap-1.5 sm:gap-2 xl:justify-self-end">
             <ThemeToggle dark={dark} onToggle={toggleTheme} />
             <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
           </div>
@@ -584,7 +584,7 @@ function Nav() {
       {/* Mobile / tablet: floating pill tab bar */}
       <nav
         aria-label="Primary"
-        className="md:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
+        className="xl:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
       >
         <ul className="pointer-events-auto flex items-stretch justify-around gap-0.5 max-w-md mx-auto p-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-link/40 ring-1 ring-link/10 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.25)]">
           {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
@@ -1166,12 +1166,12 @@ function Footer() {
   const pill =
     "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-line bg-surface/70 text-sm font-medium text-ink-2 transition-all duration-200 hover:-translate-y-0.5 hover:text-link hover:border-link/50 hover:bg-sky-light/60";
   return (
-    <footer className="relative border-t border-line bg-tint px-4 sm:px-10 pt-6 pb-[calc(96px+env(safe-area-inset-bottom))] md:py-6">
+    <footer className="relative border-t border-line bg-tint px-4 sm:px-10 pt-6 pb-[calc(96px+env(safe-area-inset-bottom))] xl:py-6">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-link/60 to-transparent"
       />
-      <div className="wrap flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-muted">
+      <div className="wrap flex flex-col xl:flex-row items-center justify-between gap-4 text-sm text-ink-muted">
         <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center">
           <span>© {new Date().getFullYear()}</span>
           <a
@@ -1287,7 +1287,7 @@ export default function App() {
   return (
     <PwaProvider>
       <Nav />
-      <main className="md:pb-0">
+      <main className="xl:pb-0">
         <Hero />
         <About />
         <Focus />
