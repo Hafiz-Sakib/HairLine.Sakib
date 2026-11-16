@@ -3,7 +3,7 @@ import { flushSync } from "react-dom";
 import {
   Laptop,
   Keyboard,
-  Exploded,
+  Terrain,
   Terminal,
   Settle,
   Branches,
@@ -173,16 +173,16 @@ const FOCUS = [
   {
     id: "web",
     eyebrow: "Full-stack engineering",
-    title: "Products people actually open twice.",
+    title: "Products people open twice.",
     body: "From a Bangla-first offline PWA to a Stripe-powered travel platform, I build interfaces that stay fast on a low-end phone and tidy under the hood — React on the front, Node and SQL/NoSQL behind it.",
     points: ["React · Next.js · TypeScript", "REST APIs, JWT auth, Stripe", "PWA, responsive, accessible"],
-    Figure: Exploded,
-    label: "An app window pulled apart into four layers",
+    Figure: Terrain,
+    label: "Eighty-one pillars on a plinth that rise around the pointer",
   },
   {
     id: "cp",
     eyebrow: "Competitive programming",
-    title: "550+ problems solved the hard way.",
+    title: "550+ problems, solved the hard way.",
     body: "Daily practice on Codeforces and LeetCode shaped how I reason about edge cases, complexity and clean abstractions. It shows up in the code I ship — and in the tools I build to teach it.",
     points: ["Codeforces Pupil (1400+)", "LeetCode rating 1532", "Algorithm visualizers & C++ tutorials"],
     Figure: Terminal,
@@ -540,17 +540,17 @@ function Nav() {
           scrolled ? "shadow-[0_1px_0_0_rgb(var(--line))]" : ""
         }`}
       >
-        <div className="w-full max-w-[1920px] mx-auto flex xl:grid xl:grid-cols-[1fr_auto_1fr] items-center justify-between gap-3 px-4 sm:px-10 xl:px-12 py-2.5 xl:py-3">
-          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0 xl:justify-self-start">
+        <div className="w-full max-w-[1920px] mx-auto flex md:grid md:grid-cols-[auto_1fr_auto] lg:grid-cols-[1fr_auto_1fr] items-center justify-between gap-2 lg:gap-3 px-4 sm:px-6 lg:px-12 py-2.5 md:py-3">
+          <a href="/" onClick={(e) => goTo(e, "home")} className="flex items-center gap-2.5 font-bold text-lg tracking-tight shrink-0 md:justify-self-start">
             <img src="/icon-192.png" alt="" width="28" height="28" className="rounded-md" />
             Sakib
           </a>
 
           <nav
-            className="hidden xl:flex items-center h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
+            className="hidden md:flex items-center justify-self-center h-10 lg:h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
             aria-label="Primary"
           >
-            <ul className="flex items-center gap-1">
+            <ul className="flex items-center gap-0.5 lg:gap-1">
               {MOBILE_NAV.map(([l, h, Icon]) => {
                 const on = active === h;
                 return (
@@ -559,13 +559,13 @@ function Nav() {
                       href={pathOf(idOf(h))}
                       onClick={(e) => goTo(e, idOf(h))}
                       aria-current={on ? "page" : undefined}
-                      className={`flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 rounded-full text-[15px] font-semibold whitespace-nowrap border transition-colors duration-150 ${
+                      className={`flex items-center gap-1.5 px-2 lg:px-3.5 py-1.5 rounded-full text-[13px] lg:text-[15px] font-semibold whitespace-nowrap border transition-colors duration-150 ${
                         on
                           ? "bg-primary text-white border-sky-dark shadow-sm"
                           : "border-transparent text-ink-2 hover:text-link hover:bg-link/10"
                       }`}
                     >
-                      <Icon size={16} strokeWidth={2} className="shrink-0" aria-hidden="true" />
+                      <Icon size={15} strokeWidth={2} className="shrink-0 hidden min-[900px]:block" aria-hidden="true" />
                       {l}
                     </a>
                   </li>
@@ -574,7 +574,7 @@ function Nav() {
             </ul>
           </nav>
 
-          <div className="flex items-center gap-1.5 sm:gap-2 xl:justify-self-end">
+          <div className="flex items-center gap-1.5 sm:gap-2 md:justify-self-end">
             <ThemeToggle dark={dark} onToggle={toggleTheme} />
             <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
           </div>
@@ -584,7 +584,7 @@ function Nav() {
       {/* Mobile / tablet: floating pill tab bar */}
       <nav
         aria-label="Primary"
-        className="xl:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
+        className="md:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
       >
         <ul className="pointer-events-auto flex items-stretch justify-around gap-0.5 max-w-md mx-auto p-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-link/40 ring-1 ring-link/10 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.25)]">
           {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
@@ -749,17 +749,31 @@ function Focus() {
   return (
     <section className="section md:!py-16 lg:!py-20">
       <div className="wrap">
-        <SectionHead eyebrow="What I do" title="One developer, four ways to be useful." />
-        <div className="mt-10 md:mt-12 space-y-14 md:space-y-14 lg:space-y-16">
+        {/* One clear section heading; the four items below use a quieter, numbered style */}
+        <Reveal className="max-w-2xl">
+          <p className="eyebrow">What I do</p>
+          <h2 className="mt-2 text-4xl md:text-5xl">Four ways I put code to work.</h2>
+          <p className="mt-4 text-lg text-ink-muted leading-relaxed">
+            Shipping full-stack products, sharpening problem-solving, researching language data and
+            deploying with care — here is where I can help most.
+          </p>
+        </Reveal>
+
+        <div className="mt-12 md:mt-14 divide-y divide-line border-y border-line">
           {FOCUS.map(({ id, eyebrow, title, body, points, Figure, label }, i) => {
             const flip = i % 2 === 1;
             return (
-              <div key={id} className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
-                <Reveal className={flip ? "md:order-2" : ""}>
-                  <p className="eyebrow">{eyebrow}</p>
-                  <h3 className="mt-2 text-3xl md:text-4xl">{title}</h3>
-                  <p className="mt-4 text-lg text-ink-muted leading-relaxed">{body}</p>
-                  <ul className="mt-6 space-y-2.5">
+              <div key={id} className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-stretch py-12 md:py-14 lg:py-16">
+                <Reveal className={`flex flex-col justify-center ${flip ? "lg:order-2" : ""}`}>
+                  <div className="flex items-center gap-3">
+                    <span className="grid place-items-center w-9 h-9 rounded-full bg-sky-light text-sky-dark text-sm font-bold tabular-nums">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <p className="eyebrow">{eyebrow}</p>
+                  </div>
+                  <h3 className="mt-4 text-2xl md:text-3xl">{title}</h3>
+                  <p className="mt-3 text-lg text-ink-muted leading-relaxed">{body}</p>
+                  <ul className="mt-5 space-y-2.5">
                     {points.map((p) => (
                       <li key={p} className="flex items-start gap-3 text-base text-ink-2">
                         <span className="mt-2 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
@@ -768,8 +782,11 @@ function Focus() {
                     ))}
                   </ul>
                 </Reveal>
-                <Reveal delay={100} className={`fig mx-auto w-full max-w-[500px] ${flip ? "md:order-1" : ""}`}>
-                  <Figure label={label} intensity={0.6} />
+                {/* Figure box fills the text column's height (5:4 figure scales to it) */}
+                <Reveal delay={100} className={`fig flex items-center justify-center ${flip ? "lg:order-1" : ""}`}>
+                  <div className="w-full max-w-[500px] lg:max-w-full lg:w-auto lg:h-full lg:max-h-[420px] lg:min-h-[300px] aspect-[5/4]">
+                    <Figure label={label} intensity={0.6} />
+                  </div>
                 </Reveal>
               </div>
             );
@@ -1149,12 +1166,12 @@ function Footer() {
   const pill =
     "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-line bg-surface/70 text-sm font-medium text-ink-2 transition-all duration-200 hover:-translate-y-0.5 hover:text-link hover:border-link/50 hover:bg-sky-light/60";
   return (
-    <footer className="relative border-t border-line bg-tint px-4 sm:px-10 pt-6 pb-[calc(96px+env(safe-area-inset-bottom))] xl:py-6">
+    <footer className="relative border-t border-line bg-tint px-4 sm:px-10 pt-6 pb-[calc(96px+env(safe-area-inset-bottom))] md:py-6">
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 -top-px h-px bg-gradient-to-r from-transparent via-link/60 to-transparent"
       />
-      <div className="wrap flex flex-col xl:flex-row items-center justify-between gap-4 text-sm text-ink-muted">
+      <div className="wrap flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-ink-muted">
         <p className="flex flex-wrap items-center justify-center gap-x-1.5 text-center">
           <span>© {new Date().getFullYear()}</span>
           <a
@@ -1270,7 +1287,7 @@ export default function App() {
   return (
     <PwaProvider>
       <Nav />
-      <main className="xl:pb-0">
+      <main className="md:pb-0">
         <Hero />
         <About />
         <Focus />
