@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { flushSync } from "react-dom";
+import { flushSync, createPortal } from "react-dom";
 import {
   Laptop,
   Keyboard,
@@ -9,7 +9,7 @@ import {
   Branches,
   Stack,
   Elevator,
-  Drawer,
+  Cabinet,
   Phone,
   Plug,
   Riffle,
@@ -23,6 +23,7 @@ import {
   ArrowRight,
   ArrowUp,
   ArrowUpRight,
+  X as CloseIcon,
   Brain,
   Briefcase,
   Cloud,
@@ -969,25 +970,52 @@ function Education() {
   return (
     <section id="education" className="section">
       <div className="wrap">
-        <SectionHead eyebrow="Education" title="Learning, formally and otherwise." />
-        <div className="mt-12 grid lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-          <Timeline items={EDU} Icon={GraduationCap} />
-          <div>
-            <Reveal className="fig mx-auto w-full max-w-[340px]">
-              <Drawer intensity={0.6} label="A cabinet of three drawers. The pointer's height picks one." />
-            </Reveal>
-            <Reveal className="card mt-6 !p-8">
-              <h3 className="text-2xl">Courses &amp; certificates</h3>
-              <ul className="mt-5 divide-y divide-line">
-                {CERTS.map(([t, y]) => (
-                  <li key={t} className="py-3 flex items-start justify-between gap-4">
-                    <span className="text-base text-ink-2">{t}</span>
-                    <span className="text-sm text-ink-muted whitespace-nowrap">{y}</span>
-                  </li>
-                ))}
-              </ul>
-            </Reveal>
-          </div>
+        <div className="grid lg:grid-cols-[1fr_320px] gap-8 lg:gap-12 items-center">
+          <SectionHead
+            eyebrow="Education"
+            title="Learning, formally and otherwise."
+            sub="A CSE degree at the core, extended by courses and bootcamps along the way."
+          />
+          <Reveal className="fig mx-auto w-full max-w-[280px] lg:max-w-[320px]">
+            <Cabinet intensity={0.6} label="A filing cabinet with drawers. The pointer's height picks a drawer." />
+          </Reveal>
+        </div>
+
+        <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
+          <Reveal className="card !p-7 sm:!p-8 flex flex-col">
+            <div className="flex items-center gap-3">
+              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+                <GraduationCap size={20} aria-hidden="true" />
+              </span>
+              <div>
+                <h3 className="text-2xl leading-tight">Academic path</h3>
+                <p className="text-sm text-ink-muted">Degrees &amp; schooling</p>
+              </div>
+            </div>
+            <div className="mt-8">
+              <Timeline items={EDU} Icon={GraduationCap} />
+            </div>
+          </Reveal>
+
+          <Reveal delay={80} className="card !p-7 sm:!p-8 flex flex-col">
+            <div className="flex items-center gap-3">
+              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+                <ListChecks size={20} aria-hidden="true" />
+              </span>
+              <div className="flex-1">
+                <h3 className="text-2xl leading-tight">Courses &amp; certificates</h3>
+                <p className="text-sm text-ink-muted">{CERTS.length} completed</p>
+              </div>
+            </div>
+            <ul className="mt-6 divide-y divide-line flex-1">
+              {CERTS.map(([t, y]) => (
+                <li key={t} className="py-3.5 flex items-start justify-between gap-4">
+                  <span className="text-base text-ink-2 leading-snug">{t}</span>
+                  <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap tabular-nums shrink-0">{y}</span>
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -1036,6 +1064,81 @@ function IconField({ Icon, top = false, children }) {
       />
       {children}
     </div>
+  );
+}
+
+/** Centered, blurred-backdrop confirmation shown after a message is sent. */
+function SentModal({ open, onClose, onAnother }) {
+  const btnRef = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    btnRef.current?.focus();
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open, onClose]);
+
+  if (!open) return null;
+  return createPortal(
+    <div
+      className="sent-backdrop fixed inset-0 z-[200] grid place-items-center p-4 bg-ink/30 backdrop-blur-md"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="sent-title"
+        className="sent-card relative w-full max-w-sm overflow-hidden rounded-3xl border border-line bg-surface px-7 pt-10 pb-7 text-center shadow-[0_30px_80px_-20px_rgba(0,0,0,0.45)]"
+      >
+        <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-48 w-48 rounded-full bg-link/25 blur-3xl" />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="absolute right-3.5 top-3.5 grid place-items-center w-8 h-8 rounded-full text-ink-muted hover:text-ink hover:bg-tint transition-colors"
+        >
+          <CloseIcon size={17} />
+        </button>
+
+        <div className="relative mx-auto grid place-items-center w-20 h-20">
+          <span aria-hidden="true" className="sent-ring absolute inset-0 rounded-full bg-link/20" />
+          <span className="sent-pop relative grid place-items-center w-20 h-20 rounded-full bg-gradient-to-br from-primary to-link text-white shadow-[0_10px_30px_-8px_rgb(var(--primary)/0.7)]">
+            <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path className="sent-tick" d="M5 12.5l4.5 4.5L19 7.5" pathLength="1" />
+            </svg>
+          </span>
+        </div>
+
+        <h3 id="sent-title" className="relative mt-6 text-3xl">Message sent!</h3>
+        <p className="relative mt-2 text-ink-muted leading-relaxed">
+          Thanks for reaching out — I&apos;ll get back to you soon.
+        </p>
+
+        <div className="relative mt-7 flex flex-col gap-2.5">
+          <button
+            ref={btnRef}
+            type="button"
+            onClick={onAnother}
+            className="btn-primary !rounded-full !py-3 text-base w-full justify-center transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <PenLine size={17} aria-hidden="true" /> Send another
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full py-2.5 text-sm font-medium text-ink-muted hover:text-ink hover:bg-tint transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }
 
@@ -1107,16 +1210,6 @@ function Contact() {
               <Plug intensity={0.7} label="A plug on its cord. Move the pointer to draw it toward the socket." />
             </div>
 
-            {state === "success" ? (
-              <div role="status" className="text-center py-8">
-                <span className="mx-auto grid place-items-center w-12 h-12 rounded-full bg-sky-light text-sky-dark">
-                  <CircleCheck size={26} />
-                </span>
-                <h3 className="mt-4 text-2xl">Message sent!</h3>
-                <p className="mt-2 text-ink-muted">Thanks for reaching out — I&apos;ll get back to you soon.</p>
-                <button type="button" className="btn-ghost mt-6" onClick={() => setState("idle")}>Send another</button>
-              </div>
-            ) : (
               <form onSubmit={submit} className="space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
@@ -1154,9 +1247,16 @@ function Contact() {
                   </p>
                 )}
               </form>
-            )}
           </div>
         </Reveal>
+        <SentModal
+          open={state === "success"}
+          onClose={() => setState("idle")}
+          onAnother={() => {
+            setState("idle");
+            setTimeout(() => document.getElementById("c-name")?.focus({ preventScroll: false }), 50);
+          }}
+        />
       </div>
     </section>
   );

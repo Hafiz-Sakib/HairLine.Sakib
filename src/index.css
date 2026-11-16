@@ -165,3 +165,16 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
 /* brand icons: light colour by default, dark-mode variant when given */
 .ti { color: var(--ic); }
 .dark .ti { color: var(--icd, var(--ic)); }
+
+/* ───────── "message sent" modal ───────── */
+@keyframes sent-backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sent-card-in { from { opacity: 0; transform: translateY(18px) scale(.94); } to { opacity: 1; transform: none; } }
+@keyframes sent-pop { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes sent-ring { 0% { transform: scale(.8); opacity: .8; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes sent-tick { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.sent-backdrop { animation: sent-backdrop-in .25s ease-out both; }
+.sent-card { animation: sent-card-in .45s cubic-bezier(.22,1,.36,1) both; }
+.sent-pop { animation: sent-pop .6s cubic-bezier(.34,1.56,.64,1) .1s both; }
+.sent-ring { animation: sent-ring 1.4s ease-out .35s 2 both; }
+.sent-tick { stroke-dasharray: 1; stroke-dashoffset: 1; animation: sent-tick .5s ease-out .5s forwards; }
+@media (prefers-reduced-motion: reduce) { .sent-backdrop, .sent-card, .sent-pop, .sent-ring { animation: none; } .sent-tick { animation: none; stroke-dashoffset: 0; } }
