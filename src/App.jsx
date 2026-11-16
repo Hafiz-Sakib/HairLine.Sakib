@@ -249,8 +249,8 @@ const JOBS = [
 ];
 
 const EDU = [
-  { when: "Graduated", title: "B.Sc. in Computer Science & Engineering", org: "Premier University, Chittagong", text: "Software engineering, algorithms and full-stack development, plus an applied AI/ML thesis." },
-  { when: "HSC", title: "Higher Secondary Certificate", org: "Govt. Haji Mohammad Mohsin College", text: "" },
+  { when: "Graduated", title: "B.Sc. in Computer Science & Engineering", org: "Premier University, Chittagong", text: "Software engineering, algorithms and full-stack development, with an undergraduate thesis on Natural Language Processing (NLP) focused on the Bengali language." },
+  { when: "HSC", title: "Higher Secondary Certificate", org: "Govt. Hazi Mohammad Mohsin College", text: "" },
   { when: "SSC", title: "Secondary School Certificate", org: "Govt. Muslim High School", text: "" },
 ];
 
