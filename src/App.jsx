@@ -15,7 +15,7 @@ import {
   Format,
   Loupe,
   Rebuild,
-  Padlock,
+  Vault,
   Query,
 } from "@lucasmarkes/hairline/react";
 import {
@@ -1298,7 +1298,7 @@ const PRINCIPLES = [
   { Figure: Format, title: "Clean code", text: "Readable, consistent and formatted — every line snaps square to its indent.", label: "A file of crooked lines that snap square under the pointer" },
   { Figure: Loupe, title: "Eye for detail", text: "Edge cases, spacing, states — the small things users feel but never name.", label: "A loupe magnifying ruled lines" },
   { Figure: Rebuild, title: "Built to scale", text: "Modular pieces that rebuild cleanly when one dependency changes.", label: "A tree of packages that rise together" },
-  { Figure: Padlock, title: "Secure by default", text: "JWT auth, role-based access and safe payments with Stripe.", label: "A padlock whose shackle lifts as the pointer nears" },
+  { Figure: Vault, title: "Secure by default", text: "JWT auth, role-based access and safe payments with Stripe.", label: "A vault door whose dial turns with the pointer until the bolts draw back" },
 ];
 
 function Principles() {
