@@ -254,7 +254,7 @@ const EDU = [
 ];
 
 const CERTS = [
-  { title: "Supervised Machine Learning: Regression and Classification", provider: "Coursera", year: "2025", url: "https://coursera.org/share/be11b6c4db8d1978211a309bbf3832d4" },
+  { title: "Supervised Machine Learning: Regression and Classification", provider: "Coursera", year: "2025", url: "https://www.coursera.org/learn/machine-learning" },
   { title: "Complete Data Science, Machine Learning, DL, NLP Bootcamp", provider: "Udemy", year: "2024", url: "https://www.udemy.com/course/complete-machine-learning-nlp-bootcamp-mlops-deployment/" },
   { title: "Number Theory Fundamentals", provider: "Udemy", year: "2023", url: "https://www.udemy.com/course/number-theory-fundamentals/" },
   { title: "Problem Solving (Basic) Certificate", provider: "HackerRank", year: "2022", url: "https://www.hackerrank.com/certificates/96a1aa85c641" },
