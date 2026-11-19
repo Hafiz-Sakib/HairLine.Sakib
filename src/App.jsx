@@ -429,6 +429,9 @@ function InstallButton({ className = "", onDone }) {
 /* ───────────────────────── theme ───────────────────────── */
 
 const THEME_KEY = "sakib-theme";
+/* Day/night switch: night grows out of the button, day shrinks back into it (CSS in index.css) */
+const SWITCH_MS = 1300;
+const SWITCH_EASE = "cubic-bezier(.5,.05,.25,1)";
 
 /** Light by default. Dark only after the visitor switches it on (remembered on this device). */
 function useTheme() {
@@ -454,17 +457,24 @@ function useTheme() {
       const x = r ? r.left + r.width / 2 : window.innerWidth / 2;
       const y = r ? r.top + r.height / 2 : 0;
       const radius = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
-      root.style.setProperty("--tx", `${x}px`);
-      root.style.setProperty("--ty", `${y}px`);
-      root.style.setProperty("--tr", `${radius}px`);
+      const st = root.style;
+      st.setProperty("--vt-x", `${x}px`); st.setProperty("--vt-y", `${y}px`);
+      st.setProperty("--vt-reach", `${radius}px`); st.setProperty("--vt-ms", `${SWITCH_MS}ms`); st.setProperty("--vt-ease", SWITCH_EASE);
+      root.dataset.themeSwitch = next ? "to-dark" : "to-light";
       root.classList.add("theme-anim");
       const t = document.startViewTransition(run);
-      t.finished.finally(() => root.classList.remove("theme-anim"));
+      // both directions are pure CSS animations (index.css): nothing is left on <html> afterwards, so a later switch never inherits a stale one
+      t.ready.catch((err) => console.warn("[theme] view transition skipped:", err));
+      t.finished.finally(() => {
+        root.classList.remove("theme-anim");
+        delete root.dataset.themeSwitch;
+        ["--vt-x", "--vt-y", "--vt-reach", "--vt-ms", "--vt-ease"].forEach((k) => st.removeProperty(k));
+      });
     } else if (!reduce) {
       // fallback: soft cross-fade
       root.classList.add("theme-fade");
       run();
-      setTimeout(() => root.classList.remove("theme-fade"), 450);
+      setTimeout(() => root.classList.remove("theme-fade"), 1100);
     } else {
       run();
     }

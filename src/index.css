@@ -132,22 +132,33 @@
 .dark .eyebrow { letter-spacing: .02em; }
 
 /* ───────── theme switch animation ───────── */
-.theme-btn .ico { transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .35s ease; }
+.theme-btn .ico { transition: transform 1.1s cubic-bezier(.5,.05,.25,1), opacity .8s ease; }
 .theme-btn:active { transform: scale(.88); }
 .theme-btn { transition: transform .2s ease, background-color .15s ease, box-shadow .3s ease; }
 .dark .theme-btn { box-shadow: 0 0 14px -3px rgba(125,170,255,.35); }
 
 ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
-::view-transition-new(root) { animation: theme-reveal .75s cubic-bezier(.65,.05,.36,1) both; }
 ::view-transition-old(root) { z-index: 1; }
 ::view-transition-new(root) { z-index: 2; }
-@keyframes theme-reveal {
-  from { clip-path: circle(0px at var(--tx, 50%) var(--ty, 0px)); }
-  to   { clip-path: circle(var(--tr, 150vmax) at var(--tx, 50%) var(--ty, 0px)); }
+:root[data-theme-switch]::view-transition-old(root) { z-index: 2; }
+:root[data-theme-switch]::view-transition-new(root) { z-index: 1; }
+/* day -> night: a hole grows out of the button in the still day snapshot, night shows underneath */
+@property --vt-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes vt-hole { from { --vt-r: 0px; } to { --vt-r: var(--vt-reach); } }
+:root[data-theme-switch="to-dark"]::view-transition-old(root) {
+  -webkit-mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), transparent var(--vt-r), #000 calc(var(--vt-r) + 1.5px));
+  mask-image: radial-gradient(circle at var(--vt-x) var(--vt-y), transparent var(--vt-r), #000 calc(var(--vt-r) + 1.5px));
+  animation: vt-hole var(--vt-ms) var(--vt-ease) both;
 }
+/* night -> day: the night snapshot closes into the button */
+@keyframes vt-close {
+  from { clip-path: circle(var(--vt-reach) at var(--vt-x) var(--vt-y)); }
+  to   { clip-path: circle(0px at var(--vt-x) var(--vt-y)); }
+}
+:root[data-theme-switch="to-light"]::view-transition-old(root) { animation: vt-close var(--vt-ms) var(--vt-ease) both; }
 html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after { transition: none !important; }
 html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
-  transition: background-color .4s ease, color .4s ease, border-color .4s ease, fill .4s ease, stroke .4s ease, box-shadow .4s ease !important;
+  transition: background-color 1s ease, color 1s ease, border-color 1s ease, fill 1s ease, stroke 1s ease, box-shadow 1s ease !important;
 }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
