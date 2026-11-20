@@ -555,7 +555,7 @@ function Nav() {
       >
         <div className="w-full max-w-[1920px] mx-auto flex xl:grid xl:grid-cols-[1fr_auto_1fr] items-center justify-between gap-3 px-4 sm:px-10 xl:px-12 py-2.5 xl:py-3">
           <a href="/" onClick={(e) => goTo(e, "home")} aria-label="Sakib, home" className="flex items-center shrink-0 xl:justify-self-start">
-            <img src="/logo-mark.png" alt="" width="35" height="38" className="h-[38px] w-auto dark:invert" />
+            <img src="/logo-mark.png" alt="" width="33" height="36" className="h-[36px] w-auto dark:invert" />
           </a>
 
           <nav
