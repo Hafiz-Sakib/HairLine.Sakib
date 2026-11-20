@@ -54,7 +54,9 @@ import {
   Sun,
   House,
   User,
-  FolderOpen,
+  UserRound,
+  CodeXml,
+  Rocket,
   CircleCheck,
   CircleAlert,
   LoaderCircle,
@@ -508,9 +510,9 @@ function ThemeToggle({ dark, onToggle }) {
 
 const MOBILE_NAV = [
   ["Home", "#home", House],
-  ["About", "#about", User],
-  ["Skills", "#skills", Wrench],
-  ["Projects", "#projects", FolderOpen],
+  ["About", "#about", UserRound],
+  ["Skills", "#skills", CodeXml],
+  ["Projects", "#projects", Rocket],
   ["Experience", "#experience", Briefcase, "hidden sm:flex"],
   ["Education", "#education", GraduationCap, "hidden sm:flex"],
   ["Contact", "#contact", Mail],
