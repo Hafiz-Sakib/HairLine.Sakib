@@ -1,12 +1,12 @@
 /* Sakib portfolio service worker — offline-first shell, runtime caching */
-const VERSION = "v5";
+const VERSION = "v6";
 const CACHE = `sakib-${VERSION}`;
 const PRECACHE = [
   "/",
   "/manifest.webmanifest",
   "/icon-192.png",
   "/icon-512.png",
-  "/logo.png",
+  "/logo-mark.png",
   "/favicon.ico",
 ];
 
