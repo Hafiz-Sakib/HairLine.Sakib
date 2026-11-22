@@ -91,6 +91,8 @@ import sababa from "./assets/sababa.jpg";
 import bagsq from "./assets/bagsq.jpg";
 import odyssey from "./assets/odyssey.jpg";
 import blood from "./assets/blood.jpg";
+import numbersystem from "./assets/number-system.jpg";
+import nikah from "./assets/nikah.jpg";
 
 /* ───────────────────────── data ───────────────────────── */
 
@@ -224,6 +226,8 @@ const SKILLS = [
 ];
 
 const PROJECTS = [
+  { title: "Number System", kind: "Interactive learning app", img: numbersystem, desc: "HSC ICT study companion for number conversion, complements, Boolean algebra and logic gates with step-by-step solutions, as an offline-ready PWA.", tags: ["React", "Vite", "Tailwind"], demo: "https://ictlogic.vercel.app/", code: "https://github.com/Hafiz-Sakib/Number-System" },
+  { title: "Nikah Community Center", kind: "Booking platform", img: nikah, desc: "Full-stack venue booking system with live availability, advance payments, PDF invoices and an admin dashboard for a Chattogram wedding hall.", tags: ["React", "Node.js", "Supabase"], demo: "https://nikah-convention.vercel.app/", code: "https://github.com/Hafiz-Sakib/Nikah-Community-Center" },
   { title: "CP Pathshala", kind: "Education PWA", img: cp, desc: "Offline-capable PWA teaching C++ competitive programming in simple Bangla — 144 lessons, 200 runnable examples, 5 learning tracks.", tags: ["React", "Vite", "PWA", "Python"], demo: "https://cp-pathshala.vercel.app/", code: "https://github.com/Hafiz-Sakib/CP-Pathshala" },
   { title: "AlgoViz", kind: "Visualizer", img: algoviz, desc: "60+ algorithms with step-by-step playback, a live C++ code panel with line highlighting and a Three.js hero scene.", tags: ["React 19", "TypeScript", "Three.js"], demo: "https://algorithm-hunter.vercel.app/", code: "https://github.com/Hafiz-Sakib/algorithm-visualizer" },
   { title: "NOVA MathPlot", kind: "Scientific tool", img: nova, desc: "Browser-only 2D/3D function plotting, 60+ surface presets, parametric curves and a neural activation explorer.", tags: ["React", "Three.js", "Math.js"], demo: "https://nova-mathplot.vercel.app/", code: "https://github.com/Hafiz-Sakib/nova-mathplot" },
