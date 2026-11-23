@@ -38,6 +38,8 @@ import {
   Binary,
   Boxes,
   ListChecks,
+  FileText,
+  Mic,
   Mail,
   MessageSquareText,
   Moon,
@@ -267,6 +269,22 @@ const CERTS = [
   { title: "Problem Solving (Intermediate) Certificate", provider: "HackerRank", year: "2022", url: "https://www.hackerrank.com/certificates/f293a98f33f8" },
   { title: "Python Complete Course For Python Beginners", provider: "Udemy", year: "2022", url: "https://www.udemy.com/course/python-complete-course-for-beginners/" },
   { title: "Full Stack Web Development (Batch 5)", provider: "Programming Hero", year: "2021 – 2022", url: "https://web.programming-hero.com/course-details" },
+];
+
+const PUBS = [
+  {
+    title: "AgentGuard: A Runtime Security Framework for Detecting and Mitigating Prompt Injection Attacks in Agentic AI Systems",
+    venue: "29th International Conference on Computer and Information Technology (IEEE ICCIT 2026)",
+    year: "2026",
+    desc: "AgentGuard is runtime security middleware that detects and mitigates prompt injection across inputs, memory, tools and RAG in agentic AI systems. Tested on seven platforms and 6,708 cases, it reached 86.2% defense success rate, F1 0.891 and AUROC 0.924 at only 4.7% latency cost.",
+    category: "Conference Paper",
+    where: "Cox’s Bazar, Bangladesh · 18–20 Dec 2026 · Hybrid",
+    about: "ICCIT is the longest-running IEEE-sponsored peer-reviewed conference in Bangladesh. The 29th edition is organized by the IEEE Bangladesh Section in Cox’s Bazar, 18–20 December 2026, in hybrid mode.",
+    status: "Accepted",
+    mode: "Oral presentation",
+    paperId: "Paper ID 3214",
+    url: "https://iccit.org.bd/",
+  },
 ];
 
 const SOCIALS = [
@@ -1048,6 +1066,47 @@ function Education() {
             </ul>
           </Reveal>
         </div>
+
+        <Reveal delay={120} className="card !p-7 sm:!p-8 flex flex-col mt-6 lg:mt-8">
+          <div className="flex items-center gap-3">
+            <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+              <FileText size={20} aria-hidden="true" />
+            </span>
+            <div className="flex-1">
+              <h3 className="text-2xl leading-tight">Publications &amp; journals</h3>
+              <p className="text-sm text-ink-muted">{PUBS.length} accepted</p>
+            </div>
+          </div>
+          <ul className="mt-5 flex flex-col">
+            {PUBS.map(({ title, venue, desc, category, where, about, year, status, mode, paperId, url }) => (
+              <li key={title} className="border-b border-line last:border-b-0">
+                <a
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col gap-2 -mx-3 px-3 py-3.5 rounded-md transition-colors hover:bg-sky-light/50"
+                >
+                  <span className="flex items-start gap-2.5 min-w-0">
+                    <FileText size={16} aria-hidden="true" className="shrink-0 mt-1 text-ink-ghost transition-colors group-hover:text-link" />
+                    <span className="text-base text-ink-2 leading-snug transition-colors group-hover:text-link">{title}</span>
+                    <ExternalLink size={13} aria-hidden="true" className="shrink-0 mt-1.5 text-link opacity-0 transition-opacity group-hover:opacity-100" />
+                  </span>
+                  <span className="pl-[26px] text-sm text-ink-muted italic">{venue}</span>
+                  <span className="pl-[26px] text-base text-ink-muted leading-relaxed">{desc}</span>
+                  <span className="pl-[26px] text-sm text-ink-muted leading-relaxed">{about}</span>
+                  <span className="pl-[26px] text-sm text-link font-medium">{where}</span>
+                  <span className="flex flex-wrap items-center gap-2 pl-[26px]">
+                    <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap">{category}</span>
+                    <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap">{status}</span>
+                    <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap inline-flex items-center gap-1"><Mic size={11} aria-hidden="true" />{mode}</span>
+                    <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap">{paperId}</span>
+                    <span className="tag !text-xs !px-2.5 !py-0.5 whitespace-nowrap tabular-nums">{year}</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
