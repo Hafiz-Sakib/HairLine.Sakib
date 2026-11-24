@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { flushSync, createPortal } from "react-dom";
 import {
+  AnimatePresence,
+  MotionConfig,
+  animate,
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import {
   Laptop,
   Keyboard,
   Terrain,
@@ -379,38 +390,138 @@ function BrandIcon({ def, size = 14, className = "" }) {
 
 function TechTag({ name }) {
   return (
-    <li className="tag inline-flex items-center gap-1.5 !py-1">
+    <motion.li
+      whileHover={{ y: -3, scale: 1.06 }}
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: "spring", stiffness: 420, damping: 18 }}
+      className="tag tag-hover inline-flex items-center gap-1.5 !py-1 cursor-default"
+    >
       <BrandIcon def={TECH[name]} size={14} />
       {name}
-    </li>
+    </motion.li>
   );
 }
 
 /* ───────────────────────── helpers ───────────────────────── */
 
-function Reveal({ as: Tag = "div", className = "", delay = 0, children, ...rest }) {
+const EASE = [0.22, 1, 0.36, 1];
+const MOTION_TAGS = { div: motion.div, li: motion.li, article: motion.article, section: motion.section };
+const FROM = {
+  up: { y: 34 },
+  down: { y: -34 },
+  left: { x: -56 },
+  right: { x: 56 },
+  scale: { scale: 0.92, y: 18 },
+  fade: {},
+};
+
+/** Scroll-reveal wrapper. `from` picks the entrance direction; cards also lift on hover. */
+function Reveal({ as: Tag = "div", className = "", delay = 0, from = "up", lift, children, ...rest }) {
+  const M = MOTION_TAGS[Tag] || motion.div;
+  const [settled, setSettled] = useState(false);
+  const isCard = /(^|\s)card(\s|$)/.test(className);
+  const liftY = lift ?? (className.includes("proj-card") ? -8 : isCard ? -5 : 0);
+  return (
+    <M
+      className={className}
+      initial={{ opacity: 0, ...FROM[from] }}
+      whileInView={{
+        opacity: 1,
+        x: 0,
+        y: 0,
+        scale: 1,
+        transition: { duration: 0.8, ease: EASE, delay: settled ? 0 : delay / 1000 },
+      }}
+      viewport={{ once: true, amount: 0.12, margin: "0px 0px -6% 0px" }}
+      whileHover={liftY ? { y: liftY, transition: { type: "spring", stiffness: 320, damping: 22 } } : undefined}
+      onAnimationComplete={() => setSettled(true)}
+      {...rest}
+    >
+      {children}
+    </M>
+  );
+}
+
+/** Counts up to a number like "550+" the first time it scrolls into view. */
+function CountUp({ value }) {
+  const m = /^(\d+)(.*)$/.exec(value);
   const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "0px 0px -10% 0px" });
+  const reduce = useReducedMotion();
+  const target = m ? Number(m[1]) : 0;
+  const [n, setN] = useState(reduce ? target : 0);
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    if (!("IntersectionObserver" in window)) return el.classList.add("in");
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          el.classList.add("in");
-          io.disconnect();
-        }
-      },
-      { threshold: 0.1 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
+    if (!inView || !m || reduce) return;
+    const c = animate(0, target, { duration: 1.8, ease: EASE, onUpdate: (v) => setN(Math.round(v)) });
+    return () => c.stop();
+  }, [inView]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!m) return <span ref={ref}>{value}</span>;
+  return (
+    <span ref={ref} className="tabular-nums">
+      {n}
+      {m[2]}
+    </span>
+  );
+}
+
+/** Thin gradient bar across the top that fills as you scroll. */
+function ScrollProgress() {
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.3 });
+  return (
+    <motion.div
+      aria-hidden="true"
+      style={{ scaleX }}
+      className="pointer-events-none fixed top-0 inset-x-0 z-[130] h-[3px] origin-left bg-gradient-to-r from-primary via-link to-[color:var(--name-c)]"
+    />
+  );
+}
+
+/** Round button that springs in once you've scrolled past the hero. */
+function BackToTop() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const on = () => setShow(window.scrollY > 700);
+    on();
+    window.addEventListener("scroll", on, { passive: true });
+    return () => window.removeEventListener("scroll", on);
   }, []);
   return (
-    <Tag ref={ref} className={`reveal ${className}`} style={{ transitionDelay: `${delay}ms` }} {...rest}>
-      {children}
-    </Tag>
+    <AnimatePresence>
+      {show && (
+        <motion.a
+          key="top"
+          href="/"
+          onClick={(e) => goTo(e, "home")}
+          aria-label="Back to top"
+          initial={{ opacity: 0, scale: 0.5, y: 24 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.5, y: 24 }}
+          whileHover={{ y: -4, scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          transition={{ type: "spring", stiffness: 380, damping: 26 }}
+          className="fixed right-4 bottom-[calc(88px+env(safe-area-inset-bottom))] xl:bottom-8 xl:right-8 z-[105] grid place-items-center w-11 h-11 rounded-full bg-primary text-white shadow-[0_10px_30px_-8px_rgb(var(--primary)/0.7)]"
+        >
+          <ArrowUp size={20} aria-hidden="true" />
+        </motion.a>
+      )}
+    </AnimatePresence>
   );
+}
+
+/** Cards get a soft light that follows the pointer (CSS reads --mx / --my). */
+function useCardSpotlight() {
+  useEffect(() => {
+    const on = (e) => {
+      const c = e.target.closest?.(".card");
+      if (!c) return;
+      const r = c.getBoundingClientRect();
+      c.style.setProperty("--mx", `${e.clientX - r.left}px`);
+      c.style.setProperty("--my", `${e.clientY - r.top}px`);
+    };
+    document.addEventListener("pointermove", on, { passive: true });
+    return () => document.removeEventListener("pointermove", on);
+  }, []);
 }
 
 const GithubIcon = (p) => (
@@ -572,15 +683,26 @@ function Nav() {
   return (
     <>
       {/* Top bar: brand + actions (full links on desktop) */}
-      <header
+      <motion.header
+        initial={{ y: -70, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, ease: EASE }}
         className={`sticky top-0 z-[100] bg-surface/90 backdrop-blur pt-[env(safe-area-inset-top)] transition-shadow duration-250 ${
-          scrolled ? "shadow-[0_1px_0_0_rgb(var(--line))]" : ""
+          scrolled ? "shadow-[0_8px_24px_-14px_rgb(var(--ink)/0.25),0_1px_0_0_rgb(var(--line))]" : ""
         }`}
       >
         <div className="w-full max-w-[1920px] mx-auto flex xl:grid xl:grid-cols-[1fr_auto_1fr] items-center justify-between gap-3 px-4 sm:px-10 xl:px-12 py-2.5 xl:py-3">
-          <a href="/" onClick={(e) => goTo(e, "home")} aria-label="Sakib, home" className="flex items-center shrink-0 xl:justify-self-start">
+          <motion.a
+            href="/"
+            onClick={(e) => goTo(e, "home")}
+            aria-label="Sakib, home"
+            whileHover={{ scale: 1.1, rotate: -5 }}
+            whileTap={{ scale: 0.92 }}
+            transition={{ type: "spring", stiffness: 400, damping: 16 }}
+            className="flex items-center shrink-0 xl:justify-self-start"
+          >
             <img src="/logo-mark.png" alt="" width="33" height="36" className="h-[36px] w-auto dark:invert" />
-          </a>
+          </motion.a>
 
           <nav
             className="hidden xl:flex items-center h-11 rounded-full bg-sky-light/60 border border-link/40 ring-1 ring-link/10 px-1.5"
@@ -595,14 +717,20 @@ function Nav() {
                       href={pathOf(idOf(h))}
                       onClick={(e) => goTo(e, idOf(h))}
                       aria-current={on ? "page" : undefined}
-                      className={`flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 rounded-full text-[15px] font-semibold whitespace-nowrap border transition-colors duration-150 ${
-                        on
-                          ? "bg-primary text-white border-sky-dark shadow-sm"
-                          : "border-transparent text-ink-2 hover:text-link hover:bg-link/10"
+                      className={`group relative flex items-center gap-1.5 px-3 xl:px-3.5 py-1.5 rounded-full text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                        on ? "text-white" : "text-ink-2 hover:text-link hover:bg-link/10"
                       }`}
                     >
-                      <Icon size={16} strokeWidth={2} className="shrink-0" aria-hidden="true" />
-                      {l}
+                      {on && (
+                        <motion.span
+                          layoutId="nav-pill"
+                          aria-hidden="true"
+                          className="absolute inset-0 rounded-full border border-sky-dark bg-primary shadow-sm"
+                          transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                        />
+                      )}
+                      <Icon size={16} strokeWidth={2} className="relative shrink-0 transition-transform duration-300 group-hover:-rotate-12 group-hover:scale-110" aria-hidden="true" />
+                      <span className="relative">{l}</span>
                     </a>
                   </li>
                 );
@@ -615,11 +743,14 @@ function Nav() {
             <InstallButton className="!px-3 !py-1.5 text-sm sm:text-base sm:!px-[15px] sm:!py-[6px]" />
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Mobile / tablet: floating pill tab bar */}
-      <nav
+      <motion.nav
         aria-label="Primary"
+        initial={{ y: 100, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 160, damping: 22, delay: 0.8 }}
         className="xl:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
       >
         <ul className="pointer-events-auto flex items-stretch justify-around gap-0.5 max-w-md mx-auto p-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-link/40 ring-1 ring-link/10 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.25)]">
@@ -631,18 +762,26 @@ function Nav() {
                   href={pathOf(idOf(h))}
                   onClick={(e) => goTo(e, idOf(h))}
                   aria-current={on ? "page" : undefined}
-                  className={`flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-full border text-[10.5px] sm:text-[11px] font-semibold leading-tight transition-colors duration-150 ${
-                    on ? "bg-primary text-white border-sky-dark shadow-sm" : "border-transparent text-ink-muted hover:text-link hover:bg-link/10"
+                  className={`relative flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-full text-[10.5px] sm:text-[11px] font-semibold leading-tight transition-[color,transform] duration-150 active:scale-90 ${
+                    on ? "text-white" : "text-ink-muted hover:text-link hover:bg-link/10"
                   }`}
                 >
-                  <Icon size={19} strokeWidth={on ? 2.25 : 1.9} aria-hidden="true" />
-                  <span className="truncate max-w-full">{l}</span>
+                  {on && (
+                    <motion.span
+                      layoutId="mob-pill"
+                      aria-hidden="true"
+                      className="absolute inset-0 rounded-full border border-sky-dark bg-primary shadow-sm"
+                      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                    />
+                  )}
+                  <Icon size={19} strokeWidth={on ? 2.25 : 1.9} className="relative" aria-hidden="true" />
+                  <span className="relative truncate max-w-full">{l}</span>
                 </a>
               </li>
             );
           })}
         </ul>
-      </nav>
+      </motion.nav>
     </>
   );
 }
@@ -685,46 +824,88 @@ function AnimatedHeading() {
   );
 }
 
+const roleList = { show: { transition: { staggerChildren: 0.07, delayChildren: 1.15 } } };
+const roleItem = {
+  hidden: { opacity: 0, y: 14, scale: 0.9 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: EASE } },
+};
+const rise = (delay) => ({
+  initial: { opacity: 0, y: 24 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.75, ease: EASE, delay },
+});
+
 function Hero() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const figY = useTransform(scrollYProgress, [0, 1], [0, 70]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, -28]);
+  const blobY = useTransform(scrollYProgress, [0, 1], [0, 140]);
+
   return (
-    <section id="home" className="section pt-12 md:pt-20 pb-10 md:pb-16 overflow-hidden">
-      <div className="wrap grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-6 items-center">
-        <div>
-          <p className="inline-flex max-w-full items-center gap-2 text-sm text-ink-2 bg-emerald-500/10 border border-emerald-600/45 dark:border-emerald-400/50 rounded-full pl-2 pr-3 py-1">
+    <section ref={ref} id="home" className="section relative pt-12 md:pt-20 pb-10 md:pb-16 overflow-hidden">
+      {/* ambient glow that drifts and parallaxes */}
+      <motion.div aria-hidden="true" style={{ y: blobY }} className="pointer-events-none absolute inset-0">
+        <motion.span
+          animate={{ x: [0, 36, 0], y: [0, -28, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-6 -right-24 h-[28rem] w-[30rem] rounded-full bg-link/15 blur-3xl"
+        />
+        <motion.span
+          animate={{ x: [0, -30, 0], y: [0, 24, 0] }}
+          transition={{ duration: 17, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-0 -left-28 h-[24rem] w-[24rem] rounded-full bg-sky-hover/70 blur-3xl"
+        />
+      </motion.div>
+
+      <div className="wrap relative grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-6 items-center">
+        <motion.div style={{ y: textY }}>
+          <motion.p
+            {...rise(0.05)}
+            className="inline-flex max-w-full items-center gap-2 text-sm text-ink-2 bg-emerald-500/10 border border-emerald-600/45 dark:border-emerald-400/50 rounded-full pl-2 pr-3 py-1"
+          >
             <span className="relative flex w-2 h-2">
               <span className="absolute inline-flex w-full h-full rounded-full bg-green-500 opacity-60 animate-ping" />
               <span className="relative inline-flex w-2 h-2 rounded-full bg-green-500" />
             </span>
             Open to work · Chattogram, Bangladesh
-          </p>
+          </motion.p>
           <AnimatedHeading />
-          <p className="mt-6 max-w-xl text-lg sm:text-xl text-ink-muted leading-relaxed">
+          <motion.p {...rise(1.0)} className="mt-6 max-w-xl text-lg sm:text-xl text-ink-muted leading-relaxed">
             Mohammad Hafizur Rahman Sakib — CSE graduate, full-stack developer and problem solver
             turning complicated ideas into calm, fast software.
-          </p>
-          <ul className="mt-6 flex flex-wrap gap-2" aria-label="Roles">
+          </motion.p>
+          <motion.ul variants={roleList} initial="hidden" animate="show" className="mt-6 flex flex-wrap gap-2" aria-label="Roles">
             {ROLES.map((r) => (
-              <li key={r} className="tag !text-sm !px-3 !py-1">{r}</li>
+              <motion.li key={r} variants={roleItem} whileHover={{ y: -3, scale: 1.05 }} className="tag tag-hover !text-sm !px-3 !py-1 cursor-default">
+                {r}
+              </motion.li>
             ))}
-          </ul>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <a href="/projects" onClick={(e) => goTo(e, "projects")} className="btn-primary text-lg !px-5 !py-2.5">
-              View projects <ArrowRight size={18} />
+          </motion.ul>
+          <motion.div {...rise(1.35)} className="mt-8 flex flex-wrap items-center gap-3">
+            <a href="/projects" onClick={(e) => goTo(e, "projects")} className="btn-primary group text-lg !px-6 !py-2.5">
+              View projects <ArrowRight size={18} className="transition-transform duration-300 group-hover:translate-x-1" />
             </a>
-            <a href={LINKS.cv} download className="btn-secondary text-lg !px-5 !py-2.5">
+            <a href={LINKS.cv} download className="btn-secondary text-lg !px-6 !py-2.5">
               <Download size={18} /> Download résumé
             </a>
             <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="btn-ghost !py-2.5">
               <GithubIcon /> GitHub
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="fig relative mx-auto w-full max-w-[560px]">
-          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[28px] bg-gradient-to-br from-sky-light via-surface to-tint" />
+        <motion.div
+          style={{ y: figY }}
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: EASE, delay: 0.35 }}
+          className="fig relative mx-auto w-full max-w-[560px]"
+        >
+          <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[36px] bg-gradient-to-br from-sky-light via-surface to-tint" />
           <Laptop play intensity={0.7} label="A laptop open on its hinge. Move the pointer up and down to lift the lid." />
           <p className="mt-2 text-center text-xs text-ink-ghost">Hover the figure — it answers the pointer.</p>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
@@ -734,18 +915,28 @@ function About() {
   return (
     <section id="about" className="section bg-tint border-y border-line">
       <div className="wrap grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-16 items-start lg:items-stretch">
-        <Reveal className="mx-auto w-full max-w-[380px] lg:max-w-none">
+        <Reveal from="left" className="mx-auto w-full max-w-[380px] lg:max-w-none">
           <div className="lg:h-full grid place-items-center">
-            <div className="w-full max-w-[340px] rounded-full p-1 bg-gradient-to-br from-primary via-link/40 to-transparent">
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+              whileHover={{ scale: 1.04 }}
+              className="relative w-full max-w-[340px] rounded-full p-1.5"
+            >
+              <span
+                aria-hidden="true"
+                className="spin-slow absolute inset-0 rounded-full"
+                style={{ background: "conic-gradient(from 0deg, rgb(var(--primary)), rgb(var(--link) / 0.12), rgb(var(--primary) / 0.9), rgb(var(--link) / 0.12), rgb(var(--primary)))" }}
+              />
               <img
                 src={profile}
                 alt="Portrait of Mohammad Hafizur Rahman Sakib"
                 width="720"
                 height="720"
                 loading="lazy"
-                className="w-full aspect-square object-cover rounded-full border-4 border-tint"
+                className="relative w-full aspect-square object-cover rounded-full border-4 border-tint"
               />
-            </div>
+            </motion.div>
           </div>
         </Reveal>
 
@@ -766,7 +957,7 @@ function About() {
             {FACTS.map(([k, v, Icon], i) => (
               <Reveal key={k} delay={i * 60} className="card !p-5">
                 <dt className="flex items-center gap-2.5 text-sm text-ink-muted">
-                  <span className="grid place-items-center w-8 h-8 shrink-0 rounded-md bg-sky-light text-sky-dark">
+                  <span className="grid place-items-center w-8 h-8 shrink-0 rounded-md bg-sky-light text-sky-dark ico-pop">
                     <Icon size={16} aria-hidden="true" />
                   </span>
                   {k}
@@ -800,7 +991,7 @@ function Focus() {
             const flip = i % 2 === 1;
             return (
               <div key={id} className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-stretch py-12 md:py-14 lg:py-16">
-                <Reveal className={`flex flex-col justify-center ${flip ? "lg:order-2" : ""}`}>
+                <Reveal from={flip ? "right" : "left"} className={`flex flex-col justify-center ${flip ? "lg:order-2" : ""}`}>
                   <div className="flex items-center gap-3">
                     <span className="grid place-items-center w-9 h-9 rounded-full bg-sky-light text-sky-dark text-sm font-bold tabular-nums">
                       {String(i + 1).padStart(2, "0")}
@@ -819,7 +1010,7 @@ function Focus() {
                   </ul>
                 </Reveal>
                 {/* Figure box fills the text column's height (5:4 figure scales to it) */}
-                <Reveal delay={100} className={`fig flex items-center justify-center ${flip ? "lg:order-1" : ""}`}>
+                <Reveal from={flip ? "left" : "right"} delay={100} className={`fig flex items-center justify-center ${flip ? "lg:order-1" : ""}`}>
                   <div className="w-full max-w-[500px] lg:max-w-full lg:w-auto lg:h-full lg:max-h-[420px] lg:min-h-[300px] aspect-[5/4]">
                     <Figure label={label} intensity={0.6} />
                   </div>
@@ -850,7 +1041,7 @@ function Skills() {
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {SKILLS.map(({ Icon, title, items }, i) => (
             <Reveal key={title} delay={(i % 4) * 70} className="card flex flex-col">
-              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
                 <Icon size={20} />
               </span>
               <h3 className="mt-4 text-xl">{title}</h3>
@@ -945,7 +1136,7 @@ function Numbers() {
           <div className="mt-10 grid grid-cols-2 gap-4">
             {STATS.map(([n, l, s], i) => (
               <Reveal key={l} delay={i * 70} className="card !p-5">
-                <div className="text-4xl md:text-5xl font-bold tracking-tight text-link">{n}</div>
+                <div className="text-4xl md:text-5xl font-bold tracking-tight text-link"><CountUp value={n} /></div>
                 <div className="mt-2 text-base font-medium">{l}</div>
                 <div className="text-sm text-ink-muted">{s}</div>
               </Reveal>
@@ -966,20 +1157,37 @@ function Numbers() {
 }
 
 function Timeline({ items, Icon }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 55%"] });
+  const scaleY = useSpring(scrollYProgress, { stiffness: 120, damping: 26, mass: 0.4 });
   return (
-    <ol className="relative border-l border-line ml-3 space-y-8">
-      {items.map(({ when, role, title, org, text }, i) => (
-        <Reveal as="li" key={role || title} delay={i * 60} className="pl-8 relative">
-          <span className="absolute -left-[13px] top-0.5 grid place-items-center w-[26px] h-[26px] rounded-full bg-sky-light text-sky-dark ring-4 ring-surface">
-            <Icon size={14} />
-          </span>
-          <p className="text-sm text-ink-muted">{when}</p>
-          <h3 className="text-xl mt-0.5">{role || title}</h3>
-          <p className="text-base text-link font-medium">{org}</p>
-          {text && <p className="mt-2 text-base text-ink-muted leading-relaxed">{text}</p>}
-        </Reveal>
-      ))}
-    </ol>
+    <div ref={ref} className="relative ml-3">
+      <span aria-hidden="true" className="absolute left-0 top-0 bottom-0 w-px bg-line" />
+      <motion.span
+        aria-hidden="true"
+        style={{ scaleY }}
+        className="absolute -left-px top-0 bottom-0 w-[3px] origin-top rounded-full bg-gradient-to-b from-primary to-link"
+      />
+      <ol className="space-y-8">
+        {items.map(({ when, role, title, org, text }, i) => (
+          <Reveal as="li" from="right" key={role || title} delay={i * 80} className="pl-8 relative">
+            <motion.span
+              initial={{ scale: 0 }}
+              whileInView={{ scale: 1 }}
+              viewport={{ once: true, amount: 1 }}
+              transition={{ type: "spring", stiffness: 420, damping: 16, delay: 0.15 + i * 0.08 }}
+              className="absolute -left-[13px] top-0.5 grid place-items-center w-[26px] h-[26px] rounded-full bg-sky-light text-sky-dark ring-4 ring-surface"
+            >
+              <Icon size={14} />
+            </motion.span>
+            <p className="text-sm text-ink-muted">{when}</p>
+            <h3 className="text-xl mt-0.5">{role || title}</h3>
+            <p className="text-base text-link font-medium">{org}</p>
+            {text && <p className="mt-2 text-base text-ink-muted leading-relaxed">{text}</p>}
+          </Reveal>
+        ))}
+      </ol>
+    </div>
   );
 }
 
@@ -1019,7 +1227,7 @@ function Education() {
         <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
           <Reveal className="card !p-7 sm:!p-8 flex flex-col">
             <div className="flex items-center gap-3">
-              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
                 <GraduationCap size={20} aria-hidden="true" />
               </span>
               <div>
@@ -1034,7 +1242,7 @@ function Education() {
 
           <Reveal delay={80} className="card !p-7 sm:!p-8 flex flex-col">
             <div className="flex items-center gap-3">
-              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+              <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
                 <ListChecks size={20} aria-hidden="true" />
               </span>
               <div className="flex-1">
@@ -1069,7 +1277,7 @@ function Education() {
 
         <Reveal delay={120} className="card !p-7 sm:!p-8 flex flex-col mt-6 lg:mt-8">
           <div className="flex items-center gap-3">
-            <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark">
+            <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
               <FileText size={20} aria-hidden="true" />
             </span>
             <div className="flex-1">
@@ -1235,13 +1443,13 @@ function Contact() {
   };
 
   const field =
-    "w-full bg-surface border border-line rounded-sm px-3 py-2.5 text-base placeholder:text-ink-ghost transition-shadow duration-150 focus:outline-none focus:shadow-focus focus:border-primary disabled:bg-tint";
+    "w-full bg-surface border border-line rounded-xl px-3 py-2.5 text-base placeholder:text-ink-ghost transition-[box-shadow,border-color,transform] duration-200 hover:border-ink-ghost focus:-translate-y-px focus:outline-none focus:shadow-focus focus:border-primary disabled:bg-tint";
   const label = "block text-sm font-medium text-ink-2 mb-1";
 
   return (
     <section id="contact" className="section">
       <div className="wrap">
-        <Reveal className="rounded-lg bg-tint border border-line overflow-hidden grid lg:grid-cols-2 items-stretch">
+        <Reveal from="scale" className="rounded-[28px] bg-tint border border-line overflow-hidden grid lg:grid-cols-2 items-stretch shadow-card">
           <div className="p-6 sm:p-12 lg:p-14 flex flex-col justify-center">
             <p className="eyebrow">Contact</p>
             <h2 className="mt-2 text-4xl md:text-5xl">Have a product to build? Plug me in.</h2>
@@ -1447,9 +1655,12 @@ const KNOWN_PATHS = ["/", "/index.html", ...SECTION_PATHS.filter((x) => x !== "h
 export default function App() {
   const known = KNOWN_PATHS.includes(window.location.pathname.replace(/(.)\/+$/, "$1"));
   useSectionRouting();
+  useCardSpotlight();
   if (!known) return <NotFound />;
   return (
+    <MotionConfig reducedMotion="user">
     <PwaProvider>
+      <ScrollProgress />
       <Nav />
       <main className="xl:pb-0">
         <Hero />
@@ -1464,7 +1675,9 @@ export default function App() {
         <Contact />
       </main>
       <Footer />
+      <BackToTop />
       <IosHelp />
     </PwaProvider>
+    </MotionConfig>
   );
 }

@@ -22,7 +22,7 @@ export default {
         sans: ['NotionInter', 'Inter Variable', 'Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Helvetica', '"Apple Color Emoji"', 'Arial', 'sans-serif'],
         mono: ['SFMono-Regular', 'Menlo', 'Consolas', '"Liberation Mono"', 'monospace'],
       },
-      borderRadius: { sm: "4px", md: "8px", lg: "12px" },
+      borderRadius: { sm: "8px", md: "14px", lg: "22px" },
       boxShadow: {
         card: "var(--shadow-card)",
         "card-hover": "var(--shadow-card-hover)",
