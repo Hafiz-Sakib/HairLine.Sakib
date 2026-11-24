@@ -760,7 +760,7 @@ function Nav() {
               <motion.li
                 key={h}
                 initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1, flexGrow: on ? 2.7 : 1 }}
+                animate={{ scale: 1, opacity: 1, flexGrow: on ? 3.3 : 1 }}
                 transition={{
                   flexGrow: { type: "spring", stiffness: 320, damping: 30 },
                   default: { type: "spring", stiffness: 420, damping: 22, delay: 0.85 + i * 0.055 },
@@ -777,7 +777,7 @@ function Nav() {
                   aria-label={l}
                   aria-current={on ? "page" : undefined}
                   whileTap={{ scale: 0.86 }}
-                  className={`relative flex items-center justify-center gap-1.5 h-11 rounded-full text-[11.5px] font-semibold leading-none transition-colors duration-200 ${
+                  className={`relative flex items-center justify-center gap-1.5 h-11 rounded-full text-[11px] font-semibold leading-none transition-colors duration-200 ${
                     on ? "text-white" : "text-ink-muted hover:text-link"
                   }`}
                 >
@@ -934,7 +934,7 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: EASE, delay: 0.35 }}
-          className="fig relative mx-auto w-full max-w-[560px]"
+          className="fig relative mx-auto hidden md:block w-full max-w-[560px]"
         >
           <div className="absolute -inset-3 sm:-inset-6 -z-10 rounded-[36px] bg-gradient-to-br from-sky-light via-surface to-tint" />
           <Laptop play intensity={0.7} label="A laptop open on its hinge. Move the pointer up and down to lift the lid." />
