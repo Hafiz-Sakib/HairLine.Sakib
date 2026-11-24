@@ -127,15 +127,15 @@ const NAV = [
   ["About", "#about"],
   ["Skills", "#skills"],
   ["Projects", "#projects"],
-  ["Experience", "#experience"],
   ["Education", "#education"],
+  ["Experience", "#experience"],
   ["Contact", "#contact"],
 ];
 
 
 /* ───────────── clean-URL section routing (/about instead of /#about) ───────────── */
 
-const SECTION_PATHS = ["home", "about", "skills", "projects", "experience", "education", "contact"];
+const SECTION_PATHS = ["home", "about", "skills", "projects", "education", "experience", "contact"];
 const idOf = (href) => href.replace(/^\/?#?\/?/, "") || "home";
 const pathOf = (id) => (id === "home" ? "/" : `/${id}`);
 const currentSection = () => {
@@ -646,8 +646,8 @@ const MOBILE_NAV = [
   ["About", "#about", UserRound],
   ["Skills", "#skills", CodeXml],
   ["Projects", "#projects", Rocket],
-  ["Experience", "#experience", Briefcase, "hidden sm:flex"],
-  ["Education", "#education", GraduationCap, "hidden sm:flex"],
+  ["Education", "#education", GraduationCap],
+  ["Experience", "#experience", Briefcase],
   ["Contact", "#contact", Mail],
 ];
 
@@ -745,39 +745,73 @@ function Nav() {
         </div>
       </motion.header>
 
-      {/* Mobile / tablet: floating pill tab bar */}
+      {/* Mobile / tablet: floating glass dock — the active tab grows to show its label */}
       <motion.nav
         aria-label="Primary"
-        initial={{ y: 100, opacity: 0 }}
+        initial={{ y: 110, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 160, damping: 22, delay: 0.8 }}
+        transition={{ type: "spring", stiffness: 150, damping: 20, delay: 0.7 }}
         className="xl:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
       >
-        <ul className="pointer-events-auto flex items-stretch justify-around gap-0.5 max-w-md mx-auto p-1.5 rounded-full bg-surface/90 backdrop-blur-md border border-link/40 ring-1 ring-link/10 shadow-[0_8px_30px_-8px_rgba(0,0,0,0.25)]">
-          {MOBILE_NAV.map(([l, h, Icon, extra = "flex"]) => {
+        <ul className="dock pointer-events-auto relative flex items-center gap-1 max-w-md mx-auto p-1.5 rounded-[30px] bg-surface/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/50 dark:border-white/10 ring-1 ring-link/15 shadow-[0_18px_50px_-14px_rgb(var(--ink)/0.4),inset_0_1px_0_rgb(255_255_255/0.55)] dark:shadow-[0_18px_50px_-14px_rgb(0_0_0/0.7),inset_0_1px_0_rgb(255_255_255/0.08)]">
+          {MOBILE_NAV.map(([l, h, Icon], i) => {
             const on = active === h;
             return (
-              <li key={h} className={`flex-1 min-w-0 ${extra}`}>
-                <a
+              <motion.li
+                key={h}
+                initial={{ scale: 0.4, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1, flexGrow: on ? 2.7 : 1 }}
+                transition={{
+                  flexGrow: { type: "spring", stiffness: 320, damping: 30 },
+                  default: { type: "spring", stiffness: 420, damping: 22, delay: 0.85 + i * 0.055 },
+                }}
+                style={{ flexBasis: 0 }}
+                className="min-w-0"
+              >
+                <motion.a
                   href={pathOf(idOf(h))}
-                  onClick={(e) => goTo(e, idOf(h))}
+                  onClick={(e) => {
+                    navigator.vibrate?.(8);
+                    goTo(e, idOf(h));
+                  }}
+                  aria-label={l}
                   aria-current={on ? "page" : undefined}
-                  className={`relative flex-1 min-w-0 flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-full text-[10.5px] sm:text-[11px] font-semibold leading-tight transition-[color,transform] duration-150 active:scale-90 ${
-                    on ? "text-white" : "text-ink-muted hover:text-link hover:bg-link/10"
+                  whileTap={{ scale: 0.86 }}
+                  className={`relative flex items-center justify-center gap-1.5 h-11 rounded-full text-[11.5px] font-semibold leading-none transition-colors duration-200 ${
+                    on ? "text-white" : "text-ink-muted hover:text-link"
                   }`}
                 >
                   {on && (
                     <motion.span
                       layoutId="mob-pill"
                       aria-hidden="true"
-                      className="absolute inset-0 rounded-full border border-sky-dark bg-primary shadow-sm"
-                      transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                      className="dock-pill absolute inset-0 rounded-full bg-gradient-to-br from-primary to-link"
+                      transition={{ type: "spring", stiffness: 420, damping: 32 }}
                     />
                   )}
-                  <Icon size={19} strokeWidth={on ? 2.25 : 1.9} className="relative" aria-hidden="true" />
-                  <span className="relative truncate max-w-full">{l}</span>
-                </a>
-              </li>
+                  <motion.span
+                    className="relative grid place-items-center"
+                    animate={on ? { scale: [1, 1.35, 1], rotate: [0, -14, 0] } : { scale: 1, rotate: 0 }}
+                    transition={{ duration: 0.5, ease: EASE }}
+                  >
+                    <Icon size={20} strokeWidth={on ? 2.3 : 1.9} aria-hidden="true" />
+                  </motion.span>
+                  <AnimatePresence initial={false}>
+                    {on && (
+                      <motion.span
+                        key="label"
+                        initial={{ opacity: 0, width: 0, x: -6 }}
+                        animate={{ opacity: 1, width: "auto", x: 0 }}
+                        exit={{ opacity: 0, width: 0, x: -6 }}
+                        transition={{ duration: 0.28, ease: EASE }}
+                        className="relative overflow-hidden whitespace-nowrap"
+                      >
+                        {l}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </motion.a>
+              </motion.li>
             );
           })}
         </ul>
@@ -1225,7 +1259,7 @@ function Education() {
         </div>
 
         <div className="mt-12 grid lg:grid-cols-2 gap-6 lg:gap-8 items-stretch">
-          <Reveal className="card !p-7 sm:!p-8 flex flex-col">
+          <Reveal className="card !p-7 sm:!p-8 flex flex-col order-1">
             <div className="flex items-center gap-3">
               <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
                 <GraduationCap size={20} aria-hidden="true" />
@@ -1240,7 +1274,7 @@ function Education() {
             </div>
           </Reveal>
 
-          <Reveal delay={80} className="card !p-7 sm:!p-8 flex flex-col">
+          <Reveal delay={80} className="card !p-7 sm:!p-8 flex flex-col order-3 lg:order-2">
             <div className="flex items-center gap-3">
               <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
                 <ListChecks size={20} aria-hidden="true" />
@@ -1273,9 +1307,8 @@ function Education() {
               ))}
             </ul>
           </Reveal>
-        </div>
 
-        <Reveal delay={120} className="card !p-7 sm:!p-8 flex flex-col mt-6 lg:mt-8">
+          <Reveal delay={120} className="card !p-7 sm:!p-8 flex flex-col order-2 lg:order-3 lg:col-span-2">
           <div className="flex items-center gap-3">
             <span className="grid place-items-center w-10 h-10 rounded-md bg-sky-light text-sky-dark ico-pop">
               <FileText size={20} aria-hidden="true" />
@@ -1315,6 +1348,8 @@ function Education() {
             ))}
           </ul>
         </Reveal>
+        </div>
+
       </div>
     </section>
   );
@@ -1670,8 +1705,8 @@ export default function App() {
         <Principles />
         <Projects />
         <Numbers />
-        <Experience />
         <Education />
+        <Experience />
         <Contact />
       </main>
       <Footer />

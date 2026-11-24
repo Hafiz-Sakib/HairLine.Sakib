@@ -235,3 +235,19 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
   .btn:hover, .btn:active { transform: none; }
   .card:hover .ico-pop { transform: none; }
 }
+
+/* mobile dock: glowing active pill with a slow light sweep, soft top gloss */
+.dock::before {
+  content: ""; position: absolute; left: 12%; right: 12%; top: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / .9), transparent); opacity: .7;
+}
+.dock-pill { box-shadow: 0 10px 22px -8px rgb(var(--primary) / .75), inset 0 1px 0 rgb(255 255 255 / .35); overflow: hidden; }
+.dock-pill::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%);
+  transform: translateX(-130%); animation: dock-sheen 3.6s ease-in-out 1s infinite;
+}
+@keyframes dock-sheen { 0%, 55% { transform: translateX(-130%); } 100% { transform: translateX(130%); } }
+@media (prefers-reduced-motion: reduce) { .dock-pill::after { animation: none; } }
+
+html { overflow-x: clip; }
