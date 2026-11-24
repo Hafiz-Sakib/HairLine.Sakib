@@ -92,6 +92,7 @@ import {
 import { FaAws, FaLinkedin } from "react-icons/fa";
 import { VscVscode } from "react-icons/vsc";
 import { PwaProvider, usePwaInstall } from "./usePwaInstall.jsx";
+import MobileDock from "./TabBar.jsx";
 
 import profile from "./assets/profile.jpg";
 import cp from "./assets/cp.jpg";
@@ -745,77 +746,8 @@ function Nav() {
         </div>
       </motion.header>
 
-      {/* Mobile / tablet: floating glass dock — the active tab grows to show its label */}
-      <motion.nav
-        aria-label="Primary"
-        initial={{ y: 110, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 150, damping: 20, delay: 0.7 }}
-        className="xl:hidden fixed bottom-0 inset-x-0 z-[110] pointer-events-none px-3 pb-[max(12px,env(safe-area-inset-bottom))]"
-      >
-        <ul className="dock pointer-events-auto relative flex items-center gap-1 max-w-md mx-auto p-1.5 rounded-[30px] bg-surface/75 backdrop-blur-2xl backdrop-saturate-150 border border-white/50 dark:border-white/10 ring-1 ring-link/15 shadow-[0_18px_50px_-14px_rgb(var(--ink)/0.4),inset_0_1px_0_rgb(255_255_255/0.55)] dark:shadow-[0_18px_50px_-14px_rgb(0_0_0/0.7),inset_0_1px_0_rgb(255_255_255/0.08)]">
-          {MOBILE_NAV.map(([l, h, Icon], i) => {
-            const on = active === h;
-            return (
-              <motion.li
-                key={h}
-                initial={{ scale: 0.4, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1, flexGrow: on ? 3.3 : 1 }}
-                transition={{
-                  flexGrow: { type: "spring", stiffness: 320, damping: 30 },
-                  default: { type: "spring", stiffness: 420, damping: 22, delay: 0.85 + i * 0.055 },
-                }}
-                style={{ flexBasis: 0 }}
-                className="min-w-0"
-              >
-                <motion.a
-                  href={pathOf(idOf(h))}
-                  onClick={(e) => {
-                    navigator.vibrate?.(8);
-                    goTo(e, idOf(h));
-                  }}
-                  aria-label={l}
-                  aria-current={on ? "page" : undefined}
-                  whileTap={{ scale: 0.86 }}
-                  className={`relative flex items-center justify-center gap-1.5 h-11 rounded-full text-[11px] font-semibold leading-none transition-colors duration-200 ${
-                    on ? "text-white" : "text-ink-muted hover:text-link"
-                  }`}
-                >
-                  {on && (
-                    <motion.span
-                      layoutId="mob-pill"
-                      aria-hidden="true"
-                      className="dock-pill absolute inset-0 rounded-full bg-gradient-to-br from-primary to-link"
-                      transition={{ type: "spring", stiffness: 420, damping: 32 }}
-                    />
-                  )}
-                  <motion.span
-                    className="relative grid place-items-center"
-                    animate={on ? { scale: [1, 1.35, 1], rotate: [0, -14, 0] } : { scale: 1, rotate: 0 }}
-                    transition={{ duration: 0.5, ease: EASE }}
-                  >
-                    <Icon size={20} strokeWidth={on ? 2.3 : 1.9} aria-hidden="true" />
-                  </motion.span>
-                  <AnimatePresence initial={false}>
-                    {on && (
-                      <motion.span
-                        key="label"
-                        initial={{ opacity: 0, width: 0, x: -6 }}
-                        animate={{ opacity: 1, width: "auto", x: 0 }}
-                        exit={{ opacity: 0, width: 0, x: -6 }}
-                        transition={{ duration: 0.28, ease: EASE }}
-                        className="relative overflow-hidden whitespace-nowrap"
-                      >
-                        {l}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </motion.a>
-              </motion.li>
-            );
-          })}
-        </ul>
-      </motion.nav>
+      {/* Mobile / tablet: docked tab bar (same style as the Number System and motionBrew sites) */}
+      <MobileDock items={MOBILE_NAV} active={active} pathOf={pathOf} idOf={idOf} />
     </>
   );
 }
