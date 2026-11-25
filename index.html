@@ -26,10 +26,11 @@
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/icon-512.png" />
     <script>
-      /* light by default; dark only if the visitor chose it. Applied before first paint. */
+      /* light (day) by default on every fresh visit; dark only if chosen in this tab session. Applied before first paint. */
       (function () {
         try {
-          var dark = localStorage.getItem("sakib-theme") === "dark";
+          try { localStorage.removeItem("sakib-theme"); } catch (e) {}
+          var dark = sessionStorage.getItem("sakib-theme") === "dark";
           if (dark) document.documentElement.classList.add("dark");
           var m = document.getElementById("theme-color");
           if (m) m.setAttribute("content", dark ? "#0a0c14" : "#ffffff");

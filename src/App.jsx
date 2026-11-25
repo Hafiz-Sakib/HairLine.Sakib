@@ -630,7 +630,7 @@ const THEME_KEY = "sakib-theme";
 const SWITCH_MS = 1300;
 const SWITCH_EASE = "cubic-bezier(.5,.05,.25,1)";
 
-/** Light by default. Dark only after the visitor switches it on (remembered on this device). */
+/** Day mode on every fresh visit. Dark only after the visitor switches it on (kept for this tab session). */
 function useTheme() {
   const [dark, setDark] = useState(() => document.documentElement.classList.contains("dark"));
 
@@ -642,7 +642,7 @@ function useTheme() {
 
   const toggle = (e) => {
     const next = !dark;
-    try { localStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* ignore */ }
+    try { sessionStorage.setItem(THEME_KEY, next ? "dark" : "light"); } catch { /* ignore */ }
 
     const root = document.documentElement;
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
@@ -1088,9 +1088,26 @@ function Skills() {
 
 const GALLERY = PROJECTS.map((p) => ({ src: p.img, alt: `${p.title} screenshot` }));
 
+/** card width follows the screen: 300 on phones up to 460 on desktop */
+function useCardWidth() {
+  const calc = () => {
+    const w = typeof window === "undefined" ? 1280 : window.innerWidth;
+    return w < 480 ? Math.min(300, Math.round(w * 0.74)) : w < 768 ? 360 : w < 1100 ? 420 : 480;
+  };
+  const [cw, setCw] = useState(calc);
+  useEffect(() => {
+    const on = () => setCw(calc());
+    window.addEventListener("resize", on);
+    return () => window.removeEventListener("resize", on);
+  }, []);
+  return cw;
+}
+
 function Projects() {
   const [i, setI] = useState(0);
+  const cw = useCardWidth();
   const p = PROJECTS[i] || PROJECTS[0];
+  const linkCls = "inline-flex items-center gap-2 text-ink underline underline-offset-4 decoration-ink/40 transition-colors duration-200 hover:text-link hover:decoration-link";
   return (
     <section id="projects" className="section bg-tint border-y border-line">
       <div className="wrap">
@@ -1108,16 +1125,17 @@ function Projects() {
         <Reveal from="scale" className="mt-10">
           <TiltCarousel
             items={GALLERY}
-            cardWidth={300}
-            aspect={0.75}
-            delay={2}
+            cardWidth={cw}
+            aspect={0.7}
+            perspective={1100}
+            delay={3}
             onActiveChange={setI}
             aria-label="Project gallery"
           />
-          <p className="mt-1 text-center text-xs text-ink-ghost">Drag, flick or tap a side card · {String(i + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}</p>
+          <p className="mt-1 text-center text-xs text-ink-ghost">Drag, flick or tap a side card</p>
         </Reveal>
 
-        <div className="mx-auto mt-6 max-w-2xl min-h-[250px] text-center">
+        <div className="mx-auto mt-6 max-w-4xl rounded-[28px] border border-line bg-card p-6 sm:p-8 shadow-card min-h-[250px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={p.title}
@@ -1125,22 +1143,29 @@ function Projects() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.3, ease: EASE }}
+              className="grid md:grid-cols-[1.2fr_1fr] gap-x-10 gap-y-6"
             >
-              <p className="text-xs font-medium text-link">{p.kind}</p>
-              <h3 className="mt-1 text-2xl sm:text-3xl">{p.title}</h3>
-              <p className="mt-3 text-sm sm:text-base text-ink-muted leading-relaxed">{p.desc}</p>
-              <ul className="mt-4 flex flex-wrap justify-center gap-1.5" aria-label="Tech stack">
-                {p.tags.map((t) => (
-                  <TechTag key={t} name={t} />
-                ))}
-              </ul>
-              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <a href={p.demo} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} live demo`} className="btn-primary">
-                  <Globe size={16} /> Live demo <ArrowUpRight size={15} />
-                </a>
-                <a href={p.code} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} source code on GitHub`} className="btn-ghost">
-                  <GithubIcon width={16} height={16} /> GitHub
-                </a>
+              <div>
+                <p className="text-sm text-ink-muted">
+                  {String(i + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")} · {p.kind}
+                </p>
+                <h3 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight">{p.title}</h3>
+                <p className="mt-3 text-base text-ink-muted leading-relaxed">{p.desc}</p>
+              </div>
+              <div className="flex flex-col gap-5 md:pt-8">
+                <ul className="flex flex-wrap gap-2" aria-label="Tech stack">
+                  {p.tags.map((t) => (
+                    <TechTag key={t} name={t} />
+                  ))}
+                </ul>
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-medium">
+                  <a href={p.demo} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} live site`} className={linkCls}>
+                    <Globe size={16} /> Live site
+                  </a>
+                  <a href={p.code} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} source code on GitHub`} className={linkCls}>
+                    <GithubIcon width={16} height={16} /> Source code
+                  </a>
+                </div>
               </div>
             </motion.div>
           </AnimatePresence>
@@ -1571,6 +1596,7 @@ function Contact() {
 function Footer() {
   const pill =
     "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-line bg-surface/70 text-sm font-medium text-ink-2 transition-all duration-200 hover:-translate-y-0.5 hover:text-link hover:border-link/50 hover:bg-sky-light/60";
+  const brand = "inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full border border-line bg-surface/70 text-sm font-medium text-ink-2 soc";
   return (
     <footer className="relative border-t border-line bg-tint px-4 sm:px-10 pt-6 pb-[calc(96px+env(safe-area-inset-bottom))] xl:py-6">
       <span
@@ -1595,10 +1621,10 @@ function Footer() {
           </span>
         </p>
         <div className="flex flex-wrap items-center justify-center gap-2">
-          <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className={pill}>
+          <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className={brand} style={socStyle("GitHub")}>
             <GithubIcon width={16} height={16} /> GitHub
           </a>
-          <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className={pill}>
+          <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className={brand} style={socStyle("LinkedIn")}>
             <FaLinkedin size={16} aria-hidden="true" /> LinkedIn
           </a>
           <a href="/" onClick={(e) => goTo(e, "home")} className={pill}>
