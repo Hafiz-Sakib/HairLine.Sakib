@@ -32,5 +32,11 @@ export default {
       transitionDuration: { 250: "250ms" },
     },
   },
-  plugins: [],
+  plugins: [
+    // touch devices: `.is-hover` (set by useTouchHover in App.jsx) behaves like :hover
+    ({ addVariant }) => {
+      addVariant("hover", ["&:hover", "&.is-hover"]);
+      addVariant("group-hover", [":merge(.group):hover &", ":merge(.group).is-hover &"]);
+    },
+  ],
 };

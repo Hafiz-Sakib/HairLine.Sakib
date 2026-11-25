@@ -86,7 +86,7 @@ import {
   SiC, SiCplusplus, SiOpenjdk, SiPython, SiJavascript, SiTypescript, SiDart, SiReact, SiNextdotjs,
   SiTailwindcss, SiHtml5, SiCss, SiNodedotjs, SiExpress, SiFirebase, SiMongodb, SiPostgresql,
   SiCodeforces, SiDocker, SiGit, SiLinux, SiVercel, SiFigma, SiGithub, SiVite, SiRedux, SiLatex,
-  SiPandas, SiJupyter, SiFacebook, SiX, SiInstagram, SiLeetcode,
+  SiPandas, SiJupyter, SiFacebook, SiX, SiInstagram, SiSupabase,
   SiPwa, SiThreedotjs, SiReactrouter, SiFramer, SiMysql, SiStripe, SiJsonwebtokens,
 } from "react-icons/si";
 import { FaAws, FaLinkedin } from "react-icons/fa";
@@ -231,7 +231,7 @@ const FOCUS = [
 const SKILLS = [
   { Icon: Code, title: "Languages", items: ["C", "C++", "Java", "Python", "JavaScript", "TypeScript", "Dart"] },
   { Icon: LayoutDashboard, title: "Frontend", items: ["React", "Next.js", "Tailwind CSS", "HTML5", "CSS3"] },
-  { Icon: Database, title: "Backend & Database", items: ["Node.js", "Express.js", "Firebase", "MongoDB", "PostgreSQL", "REST APIs"] },
+  { Icon: Database, title: "Backend & Database", items: ["Node.js", "Express.js", "Firebase", "Supabase", "MongoDB", "PostgreSQL", "REST APIs"] },
   { Icon: Trophy, title: "Competitive Programming", items: ["Codeforces", "CSES", "Problem Solving", "C++", "Algorithms"] },
   { Icon: Workflow, title: "DSA", items: ["Dynamic Programming", "Graph Theory", "Binary Search", "STL", "Number Theory"] },
   { Icon: Brain, title: "Machine Learning", items: ["Neural Networks", "LSTM", "NLP", "Pandas", "Jupyter"] },
@@ -302,8 +302,6 @@ const PUBS = [
 const SOCIALS = [
   ["GitHub", LINKS.github],
   ["LinkedIn", LINKS.linkedin],
-  ["Codeforces", LINKS.codeforces],
-  ["LeetCode", LINKS.leetcode],
   ["Facebook", LINKS.facebook],
   ["X", LINKS.x],
   ["Instagram", LINKS.instagram],
@@ -329,6 +327,7 @@ const TECH = {
   "Node.js": [SiNodedotjs, "#339933", "#5fb760"],
   "Express.js": [SiExpress, INK],
   "Firebase": [SiFirebase, "#f57c00", "#ffa000"],
+  "Supabase": [SiSupabase, "#2fa874", "#3ecf8e"],
   "MongoDB": [SiMongodb, "#47a248", "#5fc260"],
   "PostgreSQL": [SiPostgresql, "#4169e1", "#6f8ff0"],
   "REST APIs": [Network, LINK],
@@ -376,11 +375,18 @@ const TECH = {
 const SOCIAL_ICONS = {
   GitHub: [SiGithub, INK],
   LinkedIn: [FaLinkedin, "#0a66c2", "#5aa9f0"],
-  Codeforces: [SiCodeforces, "#1f8acb"],
-  LeetCode: [SiLeetcode, "#ffa116"],
   Facebook: [SiFacebook, "#1877f2", "#5b9bff"],
   X: [SiX, INK],
   Instagram: [SiInstagram, "#e4405f", "#ff6f8c"],
+};
+
+/** Hover / touch background per social: [bg, fg, bg in dark mode, fg in dark mode, optional gradient] */
+const SOCIAL_BRAND = {
+  GitHub: ["#24292f", "#ffffff", "#eef2fa", "#0a0c14"],
+  LinkedIn: ["#0a66c2", "#ffffff"],
+  Facebook: ["#1877f2", "#ffffff"],
+  X: ["#000000", "#ffffff", "#eef2fa", "#0a0c14"],
+  Instagram: ["#dc2743", "#ffffff", null, null, "linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%)"],
 };
 
 function BrandIcon({ def, size = 14, className = "" }) {
@@ -389,11 +395,16 @@ function BrandIcon({ def, size = 14, className = "" }) {
   return <Icon size={size} aria-hidden="true" className={`ti shrink-0 ${className}`} style={{ "--ic": light, "--icd": dark || light }} />;
 }
 
+function socStyle(name) {
+  const [bg, fg, bgd, fgd, img] = SOCIAL_BRAND[name] || [];
+  return { "--soc-bg-l": bg, "--soc-fg-l": fg, "--soc-bg-d": bgd || bg, "--soc-fg-d": fgd || fg, "--soc-img": img || "none" };
+}
+
 function TechTag({ name }) {
   return (
     <motion.li
       whileHover={{ y: -3, scale: 1.06 }}
-      whileTap={{ scale: 0.95 }}
+      whileTap={{ y: -3, scale: 1.06 }}
       transition={{ type: "spring", stiffness: 420, damping: 18 }}
       className="tag tag-hover inline-flex items-center gap-1.5 !py-1 cursor-default"
     >
@@ -435,6 +446,7 @@ function Reveal({ as: Tag = "div", className = "", delay = 0, from = "up", lift,
       }}
       viewport={{ once: true, amount: 0.12, margin: "0px 0px -6% 0px" }}
       whileHover={liftY ? { y: liftY, transition: { type: "spring", stiffness: 320, damping: 22 } } : undefined}
+      whileTap={liftY ? { y: liftY, transition: { type: "spring", stiffness: 320, damping: 22 } } : undefined}
       onAnimationComplete={() => setSettled(true)}
       {...rest}
     >
@@ -510,7 +522,7 @@ function BackToTop() {
   );
 }
 
-/** Cards get a soft light that follows the pointer (CSS reads --mx / --my). */
+/** Cards get a soft light that follows the pointer / finger (CSS reads --mx / --my). */
 function useCardSpotlight() {
   useEffect(() => {
     const on = (e) => {
@@ -521,7 +533,55 @@ function useCardSpotlight() {
       c.style.setProperty("--my", `${e.clientY - r.top}px`);
     };
     document.addEventListener("pointermove", on, { passive: true });
-    return () => document.removeEventListener("pointermove", on);
+    document.addEventListener("pointerdown", on, { passive: true });
+    return () => {
+      document.removeEventListener("pointermove", on);
+      document.removeEventListener("pointerdown", on);
+    };
+  }, []);
+}
+
+/**
+ * Touch screens have no hover. On touch / pen press, tag the pressed element and its
+ * hoverable ancestors with `.is-hover` (CSS + Tailwind `hover:` / `group-hover:` treat it
+ * like :hover). It stays a moment after release so the animation can finish, and is
+ * dropped straight away if the gesture turns into a scroll.
+ */
+function useTouchHover() {
+  useEffect(() => {
+    const SEL = ".card, .tag, .btn, .soc, .group, a, button, [data-hover]";
+    let held = [];
+    let timer = 0;
+    const clear = () => {
+      clearTimeout(timer);
+      held.forEach((n) => n.classList.remove("is-hover"));
+      held = [];
+    };
+    const down = (e) => {
+      if (e.pointerType === "mouse") return;
+      clear();
+      for (let n = e.target; n && n !== document.body; n = n.parentElement) {
+        if (n.matches?.(SEL)) {
+          n.classList.add("is-hover");
+          held.push(n);
+        }
+      }
+    };
+    const up = (e) => {
+      if (e.pointerType === "mouse") return;
+      clearTimeout(timer);
+      timer = setTimeout(clear, 900);
+    };
+    const cancel = () => clear();
+    document.addEventListener("pointerdown", down, { passive: true });
+    document.addEventListener("pointerup", up, { passive: true });
+    document.addEventListener("pointercancel", cancel, { passive: true });
+    return () => {
+      document.removeEventListener("pointerdown", down);
+      document.removeEventListener("pointerup", up);
+      document.removeEventListener("pointercancel", cancel);
+      clear();
+    };
   }, []);
 }
 
@@ -698,7 +758,7 @@ function Nav() {
             onClick={(e) => goTo(e, "home")}
             aria-label="Sakib, home"
             whileHover={{ scale: 1.1, rotate: -5 }}
-            whileTap={{ scale: 0.92 }}
+            whileTap={{ scale: 1.1, rotate: -5 }}
             transition={{ type: "spring", stiffness: 400, damping: 16 }}
             className="flex items-center shrink-0 xl:justify-self-start"
           >
@@ -843,7 +903,7 @@ function Hero() {
           </motion.p>
           <motion.ul variants={roleList} initial="hidden" animate="show" className="mt-6 flex flex-wrap gap-2" aria-label="Roles">
             {ROLES.map((r) => (
-              <motion.li key={r} variants={roleItem} whileHover={{ y: -3, scale: 1.05 }} className="tag tag-hover !text-sm !px-3 !py-1 cursor-default">
+              <motion.li key={r} variants={roleItem} whileHover={{ y: -3, scale: 1.05 }} whileTap={{ y: -3, scale: 1.05 }} className="tag tag-hover !text-sm !px-3 !py-1 cursor-default">
                 {r}
               </motion.li>
             ))}
@@ -887,6 +947,7 @@ function About() {
               animate={{ y: [0, -8, 0] }}
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 1.04 }}
               className="relative w-full max-w-[340px] rounded-full p-1.5"
             >
               <span
@@ -1434,7 +1495,8 @@ function Contact() {
                     href={h}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="tag inline-flex items-center gap-2 !text-sm !px-3 !py-1.5 !border-ink-ghost/50 hover:!border-link hover:bg-hover/60 transition-colors"
+                    className="tag soc inline-flex items-center gap-2 !text-sm !px-3 !py-1.5 !border-ink-ghost/50"
+                    style={socStyle(n)}
                   >
                     <BrandIcon def={SOCIAL_ICONS[n]} size={15} />
                     {n} <span aria-hidden="true" className="text-ink-ghost">↗</span>
@@ -1623,6 +1685,7 @@ export default function App() {
   const known = KNOWN_PATHS.includes(window.location.pathname.replace(/(.)\/+$/, "$1"));
   useSectionRouting();
   useCardSpotlight();
+  useTouchHover();
   if (!known) return <NotFound />;
   return (
     <MotionConfig reducedMotion="user">

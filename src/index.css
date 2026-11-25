@@ -67,12 +67,12 @@
 
 @layer components {
   .btn { @apply relative overflow-hidden inline-flex items-center justify-center gap-2 text-base font-medium px-[18px] py-[7px] rounded-full cursor-pointer; transition: background-color .25s, color .25s, border-color .25s, box-shadow .3s, transform .3s cubic-bezier(.22,1,.36,1); }
-  .btn:hover { transform: translateY(-2px); }
+  .btn:is(:hover, .is-hover) { transform: translateY(-2px); }
   .btn:active { transform: translateY(0) scale(.96); }
   .btn-primary { @apply btn bg-primary text-white hover:bg-primary-hover active:bg-primary-active; }
-  .btn-primary:hover { box-shadow: 0 12px 26px -12px rgb(var(--primary) / .75); }
+  .btn-primary:is(:hover, .is-hover) { box-shadow: 0 12px 26px -12px rgb(var(--primary) / .75); }
   .btn-secondary { @apply btn bg-sky-light text-sky-dark hover:bg-sky-hover active:bg-sky-active; }
-  .btn-secondary:hover { box-shadow: 0 10px 22px -14px rgb(var(--primary) / .55); }
+  .btn-secondary:is(:hover, .is-hover) { box-shadow: 0 10px 22px -14px rgb(var(--primary) / .55); }
   .btn-ghost { @apply btn bg-transparent text-ink border border-ink px-[16px] py-[6px] font-normal hover:bg-hover; }
   .card { @apply bg-card shadow-card p-6 transition-shadow duration-250 ease-notion hover:shadow-card-hover; }
   .section { @apply px-4 sm:px-10 py-16 md:py-24; }
@@ -120,9 +120,9 @@
     radial-gradient(40rem 30rem at 60% 108%, rgba(168,85,247,.10), transparent 60%);
 }
 .dark .btn-primary { background-image: linear-gradient(135deg, rgb(var(--primary-hover)), rgb(var(--primary))); box-shadow: 0 1px 0 rgba(255,255,255,.14) inset, 0 8px 26px -8px rgba(79,124,255,.65); }
-.dark .btn-primary:hover { box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 10px 32px -6px rgba(99,140,255,.8); }
+.dark .btn-primary:is(:hover, .is-hover) { box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 10px 32px -6px rgba(99,140,255,.8); }
 .dark .btn-ghost { border-color: rgb(var(--ink) / .35); }
-.dark .btn-ghost:hover { border-color: rgb(var(--link)); }
+.dark .btn-ghost:is(:hover, .is-hover) { border-color: rgb(var(--link)); }
 .dark .tag { background: rgb(var(--card)); }
 .dark header.sticky { background-color: rgb(var(--surface) / .72); }
 .dark .eyebrow { letter-spacing: .02em; }
@@ -189,16 +189,16 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
 /* ───────── rounder cards, spotlight, project hover ───────── */
 .card { position: relative; border: 1px solid rgb(var(--line) / .85); border-radius: 22px; transition: box-shadow .35s cubic-bezier(.22,1,.36,1), border-color .3s ease; }
 .dark .card { border-color: rgb(var(--line) / .7); }
-.card:hover { border-color: rgb(var(--link) / .4); }
+.card:is(:hover, .is-hover) { border-color: rgb(var(--link) / .4); }
 /* soft light that follows the pointer (--mx / --my are set in App.jsx) */
 .card::before {
   content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; pointer-events: none; opacity: 0;
   background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--link) / .12), transparent 60%);
   transition: opacity .35s ease;
 }
-.card:hover::before { opacity: 1; }
+.card:is(:hover, .is-hover)::before { opacity: 1; }
 
-.proj-card:hover {
+.proj-card:is(:hover, .is-hover) {
   border-color: rgb(var(--link) / .55);
   box-shadow: 0 22px 44px -18px rgb(var(--link) / .35), 0 0 0 1px rgb(var(--link) / .12);
 }
@@ -207,15 +207,15 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
   background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.28) 50%, transparent 65%);
   transform: translateX(-120%);
 }
-.proj-card:hover .proj-media::after { transform: translateX(120%); transition: transform .9s ease; }
+.proj-card:is(:hover, .is-hover) .proj-media::after { transform: translateX(120%); transition: transform .9s ease; }
 
 /* icon tiles tilt + pop when their card is hovered */
 .ico-pop { transition: transform .5s cubic-bezier(.34,1.56,.64,1), background-color .3s ease; }
-.card:hover .ico-pop { transform: rotate(-8deg) scale(1.14); background-color: rgb(var(--sky-hover)); }
+.card:is(:hover, .is-hover) .ico-pop { transform: rotate(-8deg) scale(1.14); background-color: rgb(var(--sky-hover)); }
 
 /* chips */
 .tag { transition: border-color .2s ease, background-color .2s ease, color .2s ease; }
-.tag-hover:hover { border-color: rgb(var(--link) / .6); background-color: rgb(var(--sky-light)); color: rgb(var(--ink)); }
+.tag-hover:is(:hover, .is-hover) { border-color: rgb(var(--link) / .6); background-color: rgb(var(--sky-light)); color: rgb(var(--ink)); }
 
 /* primary button sheen */
 .btn-primary::after {
@@ -223,17 +223,17 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
   background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.34) 50%, transparent 70%);
   transform: translateX(-130%);
 }
-.btn-primary:hover::after { transform: translateX(130%); transition: transform .75s ease; }
+.btn-primary:is(:hover, .is-hover)::after { transform: translateX(130%); transition: transform .75s ease; }
 
 /* slowly turning ring around the portrait */
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 .spin-slow { animation: spin-slow 9s linear infinite; }
 
 @media (prefers-reduced-motion: reduce) {
-  .proj-card:hover .proj-media::after, .btn-primary:hover::after { transition: none; }
+  .proj-card:is(:hover, .is-hover) .proj-media::after, .btn-primary:is(:hover, .is-hover)::after { transition: none; }
   .spin-slow { animation: none; }
-  .btn:hover, .btn:active { transform: none; }
-  .card:hover .ico-pop { transform: none; }
+  .btn:is(:hover, .is-hover), .btn:active { transform: none; }
+  .card:is(:hover, .is-hover) .ico-pop { transform: none; }
 }
 
 /* mobile dock: glowing active pill with a slow light sweep, soft top gloss */
@@ -251,3 +251,20 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
 @media (prefers-reduced-motion: reduce) { .dock-pill::after { animation: none; } }
 
 html { overflow-x: clip; }
+
+/* ───────── contact socials: brand-colour fill on hover / touch ───────── */
+.soc { transition: background-color .25s ease, border-color .25s ease, color .25s ease, transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease; }
+.soc { --soc-bg: var(--soc-bg-l); --soc-fg: var(--soc-fg-l); }
+.dark .soc { --soc-bg: var(--soc-bg-d); --soc-fg: var(--soc-fg-d); }
+.soc:is(:hover, .is-hover, :focus-visible) {
+  background-color: var(--soc-bg); background-image: var(--soc-img, none);
+  border-color: transparent !important; color: var(--soc-fg);
+  transform: translateY(-2px); box-shadow: 0 10px 22px -10px var(--soc-bg);
+}
+.soc:is(:hover, .is-hover, :focus-visible) .ti,
+.soc:is(:hover, .is-hover, :focus-visible) span { color: var(--soc-fg); }
+.soc:active { transform: translateY(0) scale(.96); }
+@media (prefers-reduced-motion: reduce) { .soc:is(:hover, .is-hover, :focus-visible), .soc:active { transform: none; } }
+
+/* no 300ms tap delay / grey tap flash on touch */
+a, button, .card, .tag { -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
