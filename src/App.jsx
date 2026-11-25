@@ -93,6 +93,7 @@ import { FaAws, FaLinkedin } from "react-icons/fa";
 import { VscVscode } from "react-icons/vsc";
 import { PwaProvider, usePwaInstall } from "./usePwaInstall.jsx";
 import MobileDock from "./TabBar.jsx";
+import { TiltCarousel } from "@/components/tilt-carousel";
 
 import profile from "./assets/profile.jpg";
 import cp from "./assets/cp.jpg";
@@ -1085,9 +1086,11 @@ function Skills() {
   );
 }
 
+const GALLERY = PROJECTS.map((p) => ({ src: p.img, alt: `${p.title} screenshot` }));
+
 function Projects() {
-  const [all, setAll] = useState(false);
-  const list = all ? PROJECTS : PROJECTS.slice(0, 6);
+  const [i, setI] = useState(0);
+  const p = PROJECTS[i] || PROJECTS[0];
   return (
     <section id="projects" className="section bg-tint border-y border-line">
       <div className="wrap">
@@ -1102,43 +1105,45 @@ function Projects() {
           </Reveal>
         </div>
 
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {list.map((p, i) => (
-            <Reveal key={p.title} delay={(i % 3) * 80} as="article" className="card proj-card !p-0 overflow-hidden flex flex-col group">
-              <div className="proj-media relative aspect-[16/10] overflow-hidden bg-tint border-b border-line">
-                <img
-                  src={p.img}
-                  alt={`${p.title} screenshot`}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-top transition-transform duration-700 ease-notion group-hover:scale-[1.08]"
-                />
-              </div>
-              <div className="p-6 flex flex-col flex-1">
-                <p className="text-xs font-medium text-link">{p.kind}</p>
-                <h3 className="mt-1 text-2xl transition-colors duration-300 group-hover:text-link">{p.title}</h3>
-                <p className="mt-3 text-sm text-ink-muted leading-relaxed flex-1">{p.desc}</p>
-                <ul className="mt-4 flex flex-wrap gap-1.5" aria-label="Tech stack">
-                  {p.tags.map((t) => (
-                    <TechTag key={t} name={t} />
-                  ))}
-                </ul>
-                <div className="mt-5 flex items-center gap-4 text-sm font-medium">
-                  <a href={p.demo} target="_blank" rel="noopener noreferrer" className="text-link hover:underline inline-flex items-center gap-1.5">
-                    <Globe size={15} /> Live demo <ArrowUpRight size={14} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                  </a>
-                  <a href={p.code} target="_blank" rel="noopener noreferrer" className="text-ink hover:underline inline-flex items-center gap-1.5">
-                    <GithubIcon width={15} height={15} /> Source
-                  </a>
-                </div>
-              </div>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal from="scale" className="mt-10">
+          <TiltCarousel
+            items={GALLERY}
+            cardWidth={300}
+            aspect={0.75}
+            delay={2}
+            onActiveChange={setI}
+            aria-label="Project gallery"
+          />
+          <p className="mt-1 text-center text-xs text-ink-ghost">Drag, flick or tap a side card · {String(i + 1).padStart(2, "0")} / {String(PROJECTS.length).padStart(2, "0")}</p>
+        </Reveal>
 
-        <div className="mt-10 text-center">
-          <button type="button" className="btn-ghost" onClick={() => setAll((a) => !a)}>
-            {all ? "Show fewer" : `Show all ${PROJECTS.length} projects`}
-          </button>
+        <div className="mx-auto mt-6 max-w-2xl min-h-[250px] text-center">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={p.title}
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3, ease: EASE }}
+            >
+              <p className="text-xs font-medium text-link">{p.kind}</p>
+              <h3 className="mt-1 text-2xl sm:text-3xl">{p.title}</h3>
+              <p className="mt-3 text-sm sm:text-base text-ink-muted leading-relaxed">{p.desc}</p>
+              <ul className="mt-4 flex flex-wrap justify-center gap-1.5" aria-label="Tech stack">
+                {p.tags.map((t) => (
+                  <TechTag key={t} name={t} />
+                ))}
+              </ul>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <a href={p.demo} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} live demo`} className="btn-primary">
+                  <Globe size={16} /> Live demo <ArrowUpRight size={15} />
+                </a>
+                <a href={p.code} target="_blank" rel="noopener noreferrer" aria-label={`${p.title} source code on GitHub`} className="btn-ghost">
+                  <GithubIcon width={16} height={16} /> GitHub
+                </a>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>
