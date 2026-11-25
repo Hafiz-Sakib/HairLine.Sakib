@@ -213,7 +213,7 @@ const FOCUS = [
     id: "nlp",
     eyebrow: "NLP & machine learning",
     title: "Making messy text make sense.",
-    body: "My undergraduate research applies machine learning to real-world language data: scattered, crooked inputs in, a structured tree of categories out.",
+    body: "My thesis research applies machine learning to real-world language data: scattered, crooked inputs in, a structured tree of categories out.",
     points: ["Applied ML & text classification", "Python data pipelines", "Bangla-language focus"],
     Figure: Settle,
     label: "Crooked tiles sliding into an ordered tree",
@@ -527,7 +527,7 @@ function BackToTop() {
 function useCardSpotlight() {
   useEffect(() => {
     const on = (e) => {
-      const c = e.target.closest?.(".card");
+      const c = e.target.closest?.(".card, .glow");
       if (!c) return;
       const r = c.getBoundingClientRect();
       c.style.setProperty("--mx", `${e.clientX - r.left}px`);
@@ -969,7 +969,7 @@ function About() {
         </Reveal>
 
         <div>
-          <Reveal>
+          <Reveal className="glow">
             <p className="eyebrow">About me</p>
             <h2 className="mt-2 text-4xl md:text-5xl">A developer who likes hard problems and simple interfaces.</h2>
             <p className="mt-5 text-lg text-ink-muted leading-relaxed max-w-2xl">
@@ -1005,7 +1005,7 @@ function Focus() {
     <section className="section md:!py-16 lg:!py-20">
       <div className="wrap">
         {/* One clear section heading; the four items below use a quieter, numbered style */}
-        <Reveal className="max-w-2xl">
+        <Reveal className="glow max-w-2xl">
           <p className="eyebrow">What I do</p>
           <h2 className="mt-2 text-4xl md:text-5xl">Four ways I put code to work.</h2>
           <p className="mt-4 text-lg text-ink-muted leading-relaxed">
@@ -1019,7 +1019,7 @@ function Focus() {
             const flip = i % 2 === 1;
             return (
               <div key={id} className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-stretch py-12 md:py-14 lg:py-16">
-                <Reveal from={flip ? "right" : "left"} className={`flex flex-col justify-center ${flip ? "lg:order-2" : ""}`}>
+                <Reveal from={flip ? "right" : "left"} className={`glow flex flex-col justify-center ${flip ? "lg:order-2" : ""}`}>
                   <div className="flex items-center gap-3">
                     <span className="grid place-items-center w-9 h-9 rounded-full bg-sky-light text-sky-dark text-sm font-bold tabular-nums">
                       {String(i + 1).padStart(2, "0")}
@@ -1135,7 +1135,7 @@ function Projects() {
           <p className="mt-1 text-center text-xs text-ink-ghost">Drag, flick or tap a side card</p>
         </Reveal>
 
-        <div className="mx-auto mt-6 max-w-4xl rounded-[28px] border border-line bg-card p-6 sm:p-8 shadow-card min-h-[300px] md:min-h-[340px]">
+        <div className="glow mx-auto mt-6 max-w-4xl rounded-[28px] border border-line bg-card p-6 sm:p-8 shadow-card min-h-[300px] md:min-h-[340px]">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={p.title}
@@ -1260,7 +1260,7 @@ function Experience() {
   return (
     <section id="experience" className="section bg-tint border-y border-line">
       <div className="wrap grid lg:grid-cols-[1.1fr_1fr] gap-12 lg:gap-20 items-center">
-        <div>
+        <div className="glow">
           <SectionHead eyebrow="Experience" title="Where I've worked." sub="Climbing one floor at a time." />
           <div className="mt-10">
             <Timeline items={JOBS} Icon={Briefcase} />
@@ -1515,7 +1515,7 @@ function Contact() {
   return (
     <section id="contact" className="section">
       <div className="wrap">
-        <Reveal from="scale" className="rounded-[28px] bg-tint border border-line overflow-hidden grid lg:grid-cols-2 items-stretch shadow-card">
+        <Reveal from="scale" className="glow rounded-[28px] bg-tint border border-line overflow-hidden grid lg:grid-cols-2 items-stretch shadow-card">
           <div className="p-6 sm:p-12 lg:p-14 flex flex-col justify-center">
             <p className="eyebrow">Contact</p>
             <h2 className="mt-2 text-4xl md:text-5xl">Have a product to build? Plug me in.</h2>

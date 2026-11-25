@@ -196,7 +196,17 @@ html.theme-fade *, html.theme-fade *::before, html.theme-fade *::after {
   background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--link) / .12), transparent 60%);
   transition: opacity .35s ease;
 }
-.card:is(:hover, .is-hover)::before { opacity: 1; }
+/* Same pointer-following light for big panels / text blocks (.glow). Layout is untouched. */
+.glow { position: relative; }
+.glow::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; border-radius: 22px; pointer-events: none; opacity: 0;
+  background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgb(var(--link) / .12), transparent 60%);
+  transition: opacity .35s ease;
+}
+/* Spotlight only on devices with a real mouse (PC / large screens); never on touch (phones, tablets). */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover::before, .glow:hover::before { opacity: 1; }
+}
 
 .proj-card:is(:hover, .is-hover) {
   border-color: rgb(var(--link) / .55);
