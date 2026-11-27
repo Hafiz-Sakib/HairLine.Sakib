@@ -84,28 +84,42 @@ hafiz-landing/
 │   └── icon-*.png, favicon-*  # app and browser icons
 └── src/
     ├── main.jsx               # entry point, service worker registration
-    ├── App.jsx                # content data, section routing, sections and components
+    ├── App.jsx                # composes the sections (+ 404 check, global hooks)
     ├── index.css              # theme tokens (light + dark), animations, components
     ├── usePwaInstall.jsx      # install-prompt state (Android/desktop/iOS)
+    ├── TabBar.jsx             # mobile / tablet docked tab bar
+    ├── sections/              # one file per page section, each with its own content data
+    │   ├── Nav.jsx  Hero.jsx  About.jsx  Focus.jsx  Skills.jsx  Principles.jsx
+    │   ├── Projects.jsx  Numbers.jsx  Education.jsx  Experience.jsx
+    │   └── Contact.jsx  Footer.jsx  NotFound.jsx
+    ├── components/            # reusable pieces (Reveal, SectionHead, TechTag, Timeline, ...)
+    ├── hooks/                 # useTheme, useActiveSection, useSectionRouting, ...
+    ├── data/                  # shared data: site.js (EMAIL, LINKS, NAV), tech.js, projects.js
+    ├── lib/                   # routing.js (clean-URL helpers), motion.js
     └── assets/                # profile photo and project screenshots
 ```
 
 ## Customising
 
-Almost everything you will want to change lives at the top of `src/App.jsx`:
+Content lives next to the section that shows it, or in `src/data/` when it is shared:
 
 | What | Where |
 | --- | --- |
-| Email, social links, résumé path | `EMAIL`, `LINKS`, `SOCIALS` |
-| Intro facts (location, degree, work) | `FACTS` |
-| What I do, skills, projects | `FOCUS`, `SKILLS`, `PROJECTS` |
-| Stats, jobs, education, certificates | `STATS`, `JOBS`, `EDU`, `CERTS` |
-| Icons for skill and project tags | `TECH` (name → icon and colours) |
-| Hero heading words | `HEADING` |
+| Email, social links, résumé path, nav items | `EMAIL`, `LINKS`, `NAV` in `src/data/site.js` |
+| Social buttons in the contact card | `SOCIALS` in `src/sections/Contact.jsx` |
+| Intro facts (location, degree, work) | `FACTS` in `src/sections/About.jsx` |
+| What I do | `FOCUS` in `src/sections/Focus.jsx` |
+| Skills | `SKILLS` in `src/sections/Skills.jsx` |
+| Projects | `PROJECTS` in `src/data/projects.js` |
+| Stats | `STATS` in `src/sections/Numbers.jsx` |
+| Jobs | `JOBS` in `src/sections/Experience.jsx` |
+| Education, certificates, publications | `EDU`, `CERTS`, `PUBS` in `src/sections/Education.jsx` |
+| Icons for skill and project tags | `TECH` in `src/data/tech.js` (name → icon and colours) |
+| Hero heading words, role chips | `HEADING`, `ROLES` in `src/sections/Hero.jsx` |
 
-**Adding a project:** add an object to `PROJECTS` and drop its screenshot into `src/assets/`. Tag names that exist in `TECH` automatically get their icon.
+**Adding a project:** add an object to `PROJECTS` (`src/data/projects.js`) and drop its screenshot into `src/assets/`. Tag names that exist in `TECH` automatically get their icon.
 
-**Adding a tech icon:** import it from `react-icons` (or `lucide-react`) and add one line to `TECH`, for example `"Svelte": [SiSvelte, "#ff3e00"]`. An optional third value sets a lighter colour for dark mode.
+**Adding a tech icon:** import it from `react-icons` (or `lucide-react`) and add one line to `TECH` in `src/data/tech.js`, for example `"Svelte": [SiSvelte, "#ff3e00"]`. An optional third value sets a lighter colour for dark mode.
 
 ### Theming
 
@@ -129,7 +143,7 @@ The site is a single page. Each section has its own clean URL that scrolls to th
 | `/education` | Education |
 | `/contact` | Contact |
 
-Any other path shows the custom 404 page. Routes are listed in `SECTION_PATHS` at the top of `src/App.jsx`; to add a section, give it an `id`, add it to `NAV` and `SECTION_PATHS`.
+Any other path shows the custom 404 page. Routes are listed in `SECTION_PATHS` in `src/lib/routing.js`; to add a section, create `src/sections/<Name>.jsx` with an `id`, render it in `src/App.jsx`, and add it to `NAV` (`src/data/site.js`) and `SECTION_PATHS`.
 
 > Direct visits to `/about` work only because the host serves `index.html` for every path. That is already configured in `vercel.json` (Vercel) and `public/_redirects` (Netlify).
 
